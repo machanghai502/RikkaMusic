@@ -58,7 +58,7 @@ import retrofit2.http.Query;
  */
 public interface ApiService {
 
-    String BASE_URL = "http://you local host/";
+    String BASE_URL = "http://192.168.0.103:8082";
 
     @GET("login/cellphone")
     Observable<LoginBean> login(@Query("phone") String phone, @Query("password") String password);
@@ -180,6 +180,7 @@ public interface ApiService {
     @GET("event")
     Observable<MainEventBean> getMainEvent();
 
+    //歌词
     @GET("lyric")
     Observable<LyricBean> getLyric(@Query("id") long id);
 

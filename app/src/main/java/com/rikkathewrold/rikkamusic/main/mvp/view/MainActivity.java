@@ -9,6 +9,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -92,10 +93,14 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
         connectMusicService();
 
         mPagerAdapter = new MultiFragmentPagerAdapter(getSupportFragmentManager());
+        //我的Fragment
         fragments.add(new MineFragment());
+        //发现Fragment
         fragments.add(new WowFragment());
+        //云村Fragment
         fragments.add(new CloudVillageFragment());
         mPagerAdapter.init(fragments);
+        Log.i(TAG, "MainActivity.onCreateView");
     }
 
     @Override
@@ -122,6 +127,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
         tabTitle.setTabTextColors(Color.parseColor("#e78c86"), Color.parseColor("#FFFDFD"));
         assert loginBean != null;
         initView(loginBean);
+        Log.i(TAG, "Main initView");
 
 
         setSelectTextBoldAndBig(Objects.requireNonNull(tabTitle.getTabAt(1)));

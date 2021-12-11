@@ -23,6 +23,8 @@ public class PlayListAdapter extends BaseAdapter<RecyclerView.ViewHolder, Playli
     private List<PlaylistBean> list;
     private Context mContext;
     private OnPlayListClickListener listener;
+
+    //type == 1 展示6个  type == 2 展示3个
     private int type;
 
     public PlayListAdapter(Context context) {
@@ -56,7 +58,7 @@ public class PlayListAdapter extends BaseAdapter<RecyclerView.ViewHolder, Playli
         this.type = type;
     }
 
-    //type == 1 展示6个  type == 2 展示3个
+
     @Override
     public int getItemCount() {
         return list == null ? 0 : type == 1 ? 6 : list.size();

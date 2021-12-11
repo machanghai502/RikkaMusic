@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -76,19 +77,28 @@ public class SongListAdapter extends BaseAdapter<RecyclerView.ViewHolder, SongIn
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        if (viewHolder instanceof ViewHolder) {
-            if (list == null || list.isEmpty()) {
-                return;
+
+        //todo  indexOutBoundException
+        // todo E/SongListAdapter: Index: 4, Size: 3
+        try {
+            if (viewHolder instanceof ViewHolder) {
+                if (list == null || list.isEmpty()) {
+                    return;
+                }
+                ViewHolder vh = (ViewHolder) viewHolder;
+                Log.i(TAG, "========size:" + list.size());
+                SongInfo bean = list.get(position);
+                if (type == 3) {
+                    vh.setSongInfo(mContext, bean, keywords);
+                } else {
+                    vh.setSongInfo(mContext, bean, position, type);
+                }
+                vh.setSongClick(bean, position);
             }
-            ViewHolder vh = (ViewHolder) viewHolder;
-            SongInfo bean = list.get(position);
-            if (type == 3) {
-                vh.setSongInfo(mContext, bean, keywords);
-            } else {
-                vh.setSongInfo(mContext, bean, position, type);
-            }
-            vh.setSongClick(bean, position);
+        } catch (Exception ex) {
+            Log.e(TAG, ex.getMessage());
         }
+
     }
 
     @Override
@@ -160,13 +170,17 @@ public class SongListAdapter extends BaseAdapter<RecyclerView.ViewHolder, SongIn
             }
         }
 
+        //点击歌曲进行播放的事件处理
         void setSongClick(SongInfo songInfo, int position) {
             rlSong.setOnClickListener(v -> {
+                Log.i(TAG, "SongListAdapter type:" + type);
                 if (type == 3) {
                     SongPlayManager.getInstance().clickASong(songInfo);
                 } else {
                     SongPlayManager.getInstance().clickPlayAll(list, position);
                 }
+
+                //启动播放界面
                 Intent intent = new Intent(mContext, SongActivity.class);
                 intent.putExtra(SongActivity.SONG_INFO, songInfo);
                 mContext.startActivity(intent);

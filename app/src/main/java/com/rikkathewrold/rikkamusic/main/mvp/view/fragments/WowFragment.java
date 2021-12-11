@@ -53,18 +53,26 @@ public class WowFragment extends BaseFragment<WowPresenter> implements WowContra
     public static final String PLAYLIST_CREATOR_AVATARURL = "playlistCreatorAvatarUrl";
     public static final String PLAYLIST_ID = "playlistId";
 
+    //banner
     @BindView(R.id.wow_banner)
     Banner banner;
+
+    //推荐歌单
     @BindView(R.id.rv_recommend_playlist)
     RecyclerView rvRecommendPlayList;
 
     private PlayListAdapter recommendPlayListAdapter;
+
     //banner的图片集合
     List<URL> bannerImageList = new ArrayList<>();
+
     //banner集合
     List<BannerBean.BannersBean> banners = new ArrayList<>();
+
     //推荐歌单集合
     List<MainRecommendPlayListBean.RecommendBean> recommends = new ArrayList<>();
+
+    //？？
     List<PlaylistBean> list = new ArrayList<>();
 
     public WowFragment() {
@@ -74,6 +82,7 @@ public class WowFragment extends BaseFragment<WowPresenter> implements WowContra
     @Override
     protected View initView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtil.d(TAG, "initView  isPrepared：" + isPrepared() + " isFragmentVisible：" + isFragmentVisible());
+        //获取所在的activity？
         View rootView = inflater.inflate(R.layout.fragment_wow, container, false);
         ButterKnife.bind(this, rootView);
         banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR)
@@ -86,8 +95,9 @@ public class WowFragment extends BaseFragment<WowPresenter> implements WowContra
 
     @Override
     protected void initData() {
-        LogUtil.d(TAG, "initData");
+        LogUtil.d(TAG, "WowFragment initData");
         list.clear();
+        //推荐歌单合集
         recommends.clear();
         recommendPlayListAdapter = new PlayListAdapter(getContext());
         recommendPlayListAdapter.setType(1);
@@ -96,7 +106,11 @@ public class WowFragment extends BaseFragment<WowPresenter> implements WowContra
         rvRecommendPlayList.setHasFixedSize(true);
         rvRecommendPlayList.setAdapter(recommendPlayListAdapter);
         showDialog();
+
+        //从网络中获取banner信息
         mPresenter.getBanner();
+
+        //从网络中获取
         mPresenter.getRecommendPlayList();
     }
 
@@ -110,15 +124,19 @@ public class WowFragment extends BaseFragment<WowPresenter> implements WowContra
     }
 
 
+    //获取banner成功调用方法
     @Override
     public void onGetBannerSuccess(BannerBean bean) {
-        LogUtil.d(TAG, "onGetBannerSuccess" + bean);
+        LogUtil.d(TAG, "onGetBannerSuccess:" + bean);
         banners.addAll(bean.getBanners());
         loadImageToList();
         banner.setImages(bannerImageList).start();
+
+        //banner点击事件
         banner.setOnBannerListener(position -> {
             ToastUtils.show("你以为轮播图可以点，但是我也找不到入口哒！");
         });
+
     }
 
     //将图片装到BannerList中
@@ -142,21 +160,27 @@ public class WowFragment extends BaseFragment<WowPresenter> implements WowContra
         }
         switch (v.getId()) {
             case R.id.rl_day_rec:
+                //每日推荐
                 startActivity(new Intent(activity, DailyRecommendActivity.class));
                 break;
             case R.id.rl_play_list:
+                //歌单
                 startActivity(new Intent(activity, PlayListRecommendActivity.class));
                 break;
             case R.id.rl_rank:
+                //排行榜
                 startActivity(new Intent(activity, RankActivity.class));
                 break;
             case R.id.rl_radio:
+                //电台
                 startActivity(new Intent(activity, RadioRecommendActivity.class));
                 break;
             case R.id.rl_live:
+                //直播
                 ToastUtils.show("没有提供直播接口哦，你想看我跳舞也行");
                 break;
             case R.id.tv_playlist_playground:
+                //歌单广场
                 startActivity(new Intent(activity, PlayListRecommendActivity.class));
                 break;
         }
@@ -168,6 +192,10 @@ public class WowFragment extends BaseFragment<WowPresenter> implements WowContra
         LogUtil.e(TAG, "onGetBannerFail : " + e);
     }
 
+    /**
+     * 获取推荐歌单成功调用的方法
+     * @param bean
+     */
     @Override
     public void onGetRecommendPlayListSuccess(MainRecommendPlayListBean bean) {
         hideDialog();
@@ -183,6 +211,7 @@ public class WowFragment extends BaseFragment<WowPresenter> implements WowContra
         recommendPlayListAdapter.notifyDataSetChanged(list);
     }
 
+    //点击推荐列表事件处理
     private PlayListAdapter.OnPlayListClickListener listClickListener = position -> {
         if (recommends != null && !recommends.isEmpty()) {
             //进入歌单详情页面

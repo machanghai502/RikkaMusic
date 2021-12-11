@@ -65,9 +65,9 @@ public class SharePreferenceUtil {
      * @param bean
      */
     public void saveUserInfo(LoginBean bean, String phoneNumber) {
-        if (bean.getBindings().size() > 1) {
+        /*if (bean.getBindings().size() > 1) {
             saveAuthToken(bean.getBindings().get(1).getTokenJsonStr());
-        }
+        }*/
         saveAccountNum(phoneNumber);
         saveString(Constants.SpKey.USER_INFO, GsonUtil.toJson(bean));
     }

@@ -51,6 +51,7 @@ import jp.wasabeef.glide.transformations.BlurTransformation;
 
 /**
  * 日推界面
+ * 每日推荐
  */
 public class DailyRecommendActivity extends BaseActivity<WowPresenter> implements WowContract.View {
     private static final String TAG = "DailyRecommendActivity";
@@ -58,16 +59,22 @@ public class DailyRecommendActivity extends BaseActivity<WowPresenter> implement
     //计算完成后发送的Handler msg
     private static final int COMPLETED = 0;
 
+    //歌曲列表
     @BindView(R.id.rv_dailyrecommend)
     RecyclerView rvDailyRecommend;
+    //
     @BindView(R.id.bottom_controller)
     BottomSongPlayBar bottomController;
+
+    //
     @BindView(R.id.tv_day)
     TextView tvDay;
     @BindView(R.id.tv_month)
     TextView tvMonth;
     @BindView(R.id.iv_background)
     ImageView ivBg;
+
+    //封面图
     @BindView(R.id.iv_background_cover)
     ImageView ivBgCover;
     @BindView(R.id.appbar)
@@ -75,12 +82,18 @@ public class DailyRecommendActivity extends BaseActivity<WowPresenter> implement
     @BindView(R.id.rl_play)
     RelativeLayout rlPlay;
 
-
-    //日推集合
+    //日推集合//每日推荐集合
     private List<DailyRecommendBean.RecommendBean> dailyList = new ArrayList<>();
+
+    //每日推荐歌曲列表信息
     private List<SongInfo> songInfos = new ArrayList<>();
+
+    //
     private List<DRGreenDaoBean> greenDaoList = new ArrayList<>();
+
+    //歌曲列表adapter
     private SongListAdapter songAdapter;
+
     int deltaDistance;
     int minDistance;
 
@@ -109,10 +122,13 @@ public class DailyRecommendActivity extends BaseActivity<WowPresenter> implement
 
         songAdapter = new SongListAdapter(this);
         songAdapter.setType(1);
+
         rvDailyRecommend.setLayoutManager(new LinearLayoutManager(this));
         rvDailyRecommend.setAdapter(songAdapter);
 
+        //封面图片，从用户信息中获取
         String coverUrl = GsonUtil.fromJSON(SharePreferenceUtil.getInstance(this).getUserInfo(""), LoginBean.class).getProfile().getBackgroundUrl();
+
         if (coverUrl != null) {
             Glide.with(this)
                     .load(coverUrl)
@@ -124,11 +140,16 @@ public class DailyRecommendActivity extends BaseActivity<WowPresenter> implement
                     .transition(new DrawableTransitionOptions().crossFade())
                     .into(ivBg);
         }
+
+        //当前日期
         tvDay.setText(TimeUtil.getDay(System.currentTimeMillis()));
+        //当前月份
         tvMonth.setText("/" + TimeUtil.getMonth(System.currentTimeMillis()));
 
+        //每日推荐更新时间
         long updateTime = SharePreferenceUtil.getInstance(this).getDailyUpdateTime();
         LogUtil.d(TAG, "上次日推更新时间： " + TimeUtil.getTimeStandard(updateTime));
+
         //上次更新日推时间小于当天7点，则更新日推
         if (!TimeUtil.isOver7am(updateTime)) {
             DailyRecommendDaoOp.deleteAllData(this);
@@ -136,7 +157,8 @@ public class DailyRecommendActivity extends BaseActivity<WowPresenter> implement
             showDialog();
             mPresenter.getDailyRecommend();
         } else {
-            //从GreenDao里面取出日推
+            //从GreenDao里面取出日推数据
+            //从数据库
             greenDaoList = DailyRecommendDaoOp.queryAll(this);
             if (greenDaoList != null) {
                 notifyAdapter(greenDaoList);
@@ -165,6 +187,7 @@ public class DailyRecommendActivity extends BaseActivity<WowPresenter> implement
             songInfo.setArtistKey(greenDaoList.get(i).getArtistAvatar());
             songInfos.add(songInfo);
         }
+        //更新歌曲列表
         songAdapter.notifyDataSetChanged(songInfos);
     }
 
@@ -214,7 +237,9 @@ public class DailyRecommendActivity extends BaseActivity<WowPresenter> implement
     @OnClick({R.id.rl_playall})
     public void onClick(View v) {
         switch (v.getId()) {
+            ////播放全部
             case R.id.rl_playall:
+
                 if (songInfos != null && !songInfos.isEmpty()) {
                     SongPlayManager.getInstance().clickPlayAll(songInfos, 0);
                 }
@@ -248,6 +273,7 @@ public class DailyRecommendActivity extends BaseActivity<WowPresenter> implement
 
     }
 
+    //调用api接口，获取每日推荐成功方法
     @Override
     public void onGetDailyRecommendSuccess(DailyRecommendBean bean) {
         hideDialog();
@@ -270,8 +296,10 @@ public class DailyRecommendActivity extends BaseActivity<WowPresenter> implement
         }
 
         //先删除GreenDao里的所有数据，再将日推存储到GreenDao
+        //todo 数据库
         DailyRecommendDaoOp.saveData(this, greenDaoList);
 
+        //更新歌曲列表
         notifyAdapter(greenDaoList);
     }
 

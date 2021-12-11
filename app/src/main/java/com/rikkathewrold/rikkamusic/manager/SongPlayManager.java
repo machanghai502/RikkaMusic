@@ -1,5 +1,7 @@
 package com.rikkathewrold.rikkamusic.manager;
 
+import android.util.Log;
+
 import com.hjq.toast.ToastUtils;
 import com.lzx.starrysky.manager.MusicManager;
 import com.lzx.starrysky.manager.OnPlayerEventListener;
@@ -16,6 +18,7 @@ import com.rikkathewrold.rikkamusic.util.LogUtil;
 import com.rikkathewrold.rikkamusic.util.SharePreferenceUtil;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -57,13 +60,17 @@ public class SongPlayManager {
 
     //播放模式
     private int mode;
+
     //播放列表
     private List<SongInfo> songList = new ArrayList<>();
+
     //播放到第几首歌曲
     private int currentSongIndex;
     //单例模式
     private static SongPlayManager instance;
+
     //维护一个哈希表， key是 SongId, value 是 isMusicCanPlay，如果一首歌已经知道它是否可以播放，就把它放在这个哈希表里面
+
     private HashMap<String, Boolean> musicCanPlayMap;
     //设置监听器
     private SongPlayListener songListener;
@@ -172,8 +179,9 @@ public class SongPlayManager {
             return;
         }
         if (musicCanPlayMap.get(songId) == null) {
+            //todo 这里不调用接口来检测了，默认直接就可以播放
             //如果一首歌还没有去检测它 是否可以播放，则就去做检测
-            setOnSongCanPlayListener(songId, new OnSongListener() {
+            /*setOnSongCanPlayListener(songId, new OnSongListener() {
                 @Override
                 public void onSongCanPlaySuccess(MusicCanPlayBean bean) {
                     if (bean.isSuccess()) {
@@ -188,7 +196,11 @@ public class SongPlayManager {
                 public void onSongCnaPlayFail(String e) {
                     ToastUtils.show(e);
                 }
-            });
+            });*/
+
+            musicCanPlayMap.put(songId, true);
+            playMusic(songId);
+
         } else {
             //如果一首歌曲之前已经检测过了，则直接调用结果即可
             playMusic(songId);
@@ -431,6 +443,8 @@ public class SongPlayManager {
      * 同时播放这首歌，需要在进入这首歌界面之前重置下状态
      */
     public void clickASong(SongInfo songInfo) {
+        Log.i(TAG, "SongPlayManager clickASong");
+        Log.i(TAG, "SongPlayManager songInfo:" + songInfo.toString());
         if (isPlaying()) {
             LogUtil.d(TAG, "isPlaying");
             //当前播放的歌曲不是准备播放的歌曲，停止该歌曲

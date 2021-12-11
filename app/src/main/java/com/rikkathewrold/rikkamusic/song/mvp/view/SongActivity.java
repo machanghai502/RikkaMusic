@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.AppCompatSeekBar;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
@@ -63,7 +64,9 @@ import jp.wasabeef.glide.transformations.BlurTransformation;
 
 import static com.rikkathewrold.rikkamusic.main.mvp.view.PlayListActivity.COMPLETED;
 
-
+/**
+ * 歌曲播放界面Activity
+ */
 public class SongActivity extends BaseActivity<SongPresenter> implements SongContract.View {
     private static final String TAG = "SongActivity";
 
@@ -75,8 +78,12 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
     ImageView ivLike;
     @BindView(R.id.tv_past_time)
     TextView tvPastTime;
+
+    //歌曲总共的时间
     @BindView(R.id.total_time)
     TextView tvTotalTime;
+
+    //进度条
     @BindView(R.id.seek_bar)
     AppCompatSeekBar seekBar;
     @BindView(R.id.iv_play)
@@ -87,10 +94,14 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
     ImageView ivPlayMode;
     @BindView(R.id.ll_info)
     LinearLayout llInfo;
+
+    //歌词
     @BindView(R.id.lrc)
     LyricView lrc;
 
+    //当前播放的歌曲
     private SongInfo currentSongInfo;
+
     private long ids;
     private SongDetailBean songDetail;
     private TimerTaskManager mTimerTask;
@@ -98,7 +109,10 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
     private int playMode;
     private ObjectAnimator rotateAnimator;
     private ObjectAnimator alphaAnimator;
+
+    //是否显示歌词
     private boolean isShowLyrics = false;
+
     private LyricBean lyricBean;
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -150,6 +164,7 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
         LogUtil.d(TAG, "initData");
         getIntentData();
         setBackBtn(getString(R.string.colorWhite));
+        //播放模式
         playMode = SongPlayManager.getInstance().getMode();
         mTimerTask = new TimerTaskManager();
         initTimerTaskWork();
@@ -159,6 +174,7 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
 
 
     private void initTimerTaskWork() {
+        //更新进度
         mTimerTask.setUpdateProgressTask(() -> {
             long position = MusicManager.getInstance().getPlayingPosition();
             //SeekBar 设置 Max
@@ -191,6 +207,8 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
     private void getIntentData() {
         Intent intent = getIntent();
         currentSongInfo = intent.getParcelableExtra(SONG_INFO);
+        Log.i(TAG, "getIntentData:" + currentSongInfo);
+        Log.i(TAG, "getIntentData songUrl:" + currentSongInfo.getSongUrl());
     }
 
     private void checkMusicState() {
@@ -205,8 +223,12 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
             llInfo.setVisibility(View.VISIBLE);
             ids = Long.parseLong(currentSongInfo.getSongId());
             String songId = currentSongInfo.getSongId();
-            List<String> likeList = SharePreferenceUtil.getInstance(this).getLikeList();
+
+            //todo 暂时置为空,即没有喜欢列表。当点击了喜欢按钮时？？？
+            //List<String> likeList = SharePreferenceUtil.getInstance(this).getLikeList();
+            List<String> likeList = new ArrayList<>();
             LogUtil.d(TAG, "likeList :" + likeList);
+            //判断当前歌曲是否在喜欢收藏列表中
             if (likeList.contains(songId)) {
                 isLike = true;
                 ivLike.setImageResource(R.drawable.shape_like_white);
@@ -315,6 +337,7 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
                 showLyrics(true);
                 break;
             case R.id.iv_play:
+                //播放按钮
                 if (SongPlayManager.getInstance().isPlaying()) {
                     SongPlayManager.getInstance().pauseMusic();
                 } else if (SongPlayManager.getInstance().isPaused()) {
@@ -324,6 +347,7 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
                 }
                 break;
             case R.id.iv_like:
+                //喜欢不喜欢按钮
                 if (isLike) {
                     ToastUtils.show("Sorry啊，我没有找到取消喜欢的接口");
                 } else {
@@ -331,9 +355,11 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
                 }
                 break;
             case R.id.iv_download:
+                //下载？
                 ToastUtils.show("Sorry啊，歌都不是我的，不能下载的");
                 break;
             case R.id.iv_comment:
+                //评论
                 if (songDetail == null) {
                     ToastUtils.show("获取不到歌曲信息，稍后再试");
                     return;
@@ -353,6 +379,7 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
                 overridePendingTransition(R.anim.bottom_in, R.anim.bottom_silent);
                 break;
             case R.id.iv_play_mode:
+                //切换播放模式
                 if (playMode == SongPlayManager.MODE_LIST_LOOP_PLAY) {
                     SongPlayManager.getInstance().setMode(SongPlayManager.MODE_SINGLE_LOOP_PLAY);
                     ivPlayMode.setImageResource(R.drawable.shape_single_cycle);
@@ -371,9 +398,11 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
                 }
                 break;
             case R.id.iv_pre:
+                //上一首
                 SongPlayManager.getInstance().playPreMusic();
                 break;
             case R.id.iv_next:
+                //下一首
                 SongPlayManager.getInstance().playNextMusic();
                 break;
             case R.id.iv_list:

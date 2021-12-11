@@ -44,6 +44,7 @@ public class WowPresenter extends WowContract.Presenter {
 
                     @Override
                     public void onError(Throwable e) {
+                        LogUtil.d(TAG, "getBanner BannerBean");
                         mView.onGetBannerFail(e.getMessage());
                     }
 
@@ -66,13 +67,13 @@ public class WowPresenter extends WowContract.Presenter {
 
                     @Override
                     public void onNext(MainRecommendPlayListBean recommendPlayListBean) {
-                        LogUtil.d(TAG, "onNext" + recommendPlayListBean.toString());
+                        LogUtil.d(TAG, "getRecommendPlayList onNext" + recommendPlayListBean.toString());
                         mView.onGetRecommendPlayListSuccess(recommendPlayListBean);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        LogUtil.e(TAG, "onError:" + e);
+                        LogUtil.e(TAG, "getRecommendPlayList onError:" + e);
                         mView.onGetRecommendPlayListFail(e.getMessage());
                     }
 
@@ -83,6 +84,7 @@ public class WowPresenter extends WowContract.Presenter {
                 });
     }
 
+    //从api中获取每日推荐歌曲信息
     @Override
     public void getDailyRecommend() {
         mModel.getDailyRecommend().subscribeOn(Schedulers.io())
@@ -95,7 +97,7 @@ public class WowPresenter extends WowContract.Presenter {
 
                     @Override
                     public void onNext(DailyRecommendBean bean) {
-                        LogUtil.d(TAG, "onNext" + bean);
+                        LogUtil.d(TAG, "getDailyRecommend onNext" + bean);
                         mView.onGetDailyRecommendSuccess(bean);
                     }
 
