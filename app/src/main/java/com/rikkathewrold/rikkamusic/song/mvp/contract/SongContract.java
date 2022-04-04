@@ -4,6 +4,8 @@ import com.rikkathewrold.rikkamusic.base.BaseModel;
 import com.rikkathewrold.rikkamusic.base.BasePresenter;
 import com.rikkathewrold.rikkamusic.base.BaseView;
 import com.rikkathewrold.rikkamusic.main.bean.LikeListBean;
+import com.rikkathewrold.rikkamusic.main.bean.Song;
+import com.rikkathewrold.rikkamusic.main.bean.UserLikeData;
 import com.rikkathewrold.rikkamusic.song.bean.CommentLikeBean;
 import com.rikkathewrold.rikkamusic.song.bean.LikeMusicBean;
 import com.rikkathewrold.rikkamusic.song.bean.LyricBean;
@@ -15,15 +17,15 @@ import io.reactivex.Observable;
 
 public interface SongContract {
     interface View extends BaseView {
-        void onGetSongDetailSuccess(SongDetailBean bean);
+        void onGetSongDetailSuccess(Song bean);
 
         void onGetSongDetailFail(String e);
 
-        void onLikeMusicSuccess(LikeMusicBean bean);
+        void onLikeOrUnLikeMusicSuccess(Boolean bean, String songId);
 
         void onLikeMusicFail(String e);
 
-        void onGetLikeListSuccess(LikeListBean bean);
+        void onGetLikeListSuccess(UserLikeData bean);
 
         void onGetLikeListFail(String e);
 
@@ -45,11 +47,11 @@ public interface SongContract {
     }
 
     interface Model extends BaseModel {
-        Observable<SongDetailBean> getSongDetail(long ids);
+        Observable<Song> getSongDetail(long songId);
 
-        Observable<LikeMusicBean> likeMusic(long id);
+        Observable<Boolean> likeOrUnLikeMusic(long songId, long uid);
 
-        Observable<LikeListBean> getLikeList(long uid);
+        Observable<UserLikeData> getLikeList(long uid);
 
         Observable<MusicCommentBean> getMusicComment(long id);
 
@@ -63,7 +65,7 @@ public interface SongContract {
     abstract class Presenter extends BasePresenter<View, Model> {
         public abstract void getSongDetail(long ids);
 
-        public abstract void likeMusic(long id);
+        public abstract void likeOrUnLikeMusic(long songId, long uid);
 
         public abstract void getLikeList(long uid);
 

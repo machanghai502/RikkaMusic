@@ -2,6 +2,8 @@ package com.rikkathewrold.rikkamusic.song.mvp.presenter;
 
 
 import com.rikkathewrold.rikkamusic.main.bean.LikeListBean;
+import com.rikkathewrold.rikkamusic.main.bean.Song;
+import com.rikkathewrold.rikkamusic.main.bean.UserLikeData;
 import com.rikkathewrold.rikkamusic.song.bean.CommentLikeBean;
 import com.rikkathewrold.rikkamusic.song.bean.LikeMusicBean;
 import com.rikkathewrold.rikkamusic.song.bean.LyricBean;
@@ -26,17 +28,17 @@ public class SongPresenter extends SongContract.Presenter {
     }
 
     @Override
-    public void getSongDetail(long ids) {
-        mModel.getSongDetail(ids).subscribeOn(Schedulers.io())
+    public void getSongDetail(long songId) {
+        mModel.getSongDetail(songId).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<SongDetailBean>() {
+                .subscribe(new Observer<Song>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         LogUtil.d(TAG, "onSubscribe");
                     }
 
                     @Override
-                    public void onNext(SongDetailBean bean) {
+                    public void onNext(Song bean) {
                         LogUtil.d(TAG, "onNext :" + bean);
                         mView.onGetSongDetailSuccess(bean);
                     }
@@ -54,20 +56,25 @@ public class SongPresenter extends SongContract.Presenter {
                 });
     }
 
+
+    /**
+     * 喜欢或者取消喜欢接口
+     * @param songId
+     */
     @Override
-    public void likeMusic(long id) {
-        mModel.likeMusic(id).subscribeOn(Schedulers.io())
+    public void likeOrUnLikeMusic(long songId, long uid) {
+        mModel.likeOrUnLikeMusic(songId, uid).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<LikeMusicBean>() {
+                .subscribe(new Observer<Boolean>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         LogUtil.d(TAG, "onSubscribe");
                     }
 
                     @Override
-                    public void onNext(LikeMusicBean bean) {
+                    public void onNext(Boolean bean) {
                         LogUtil.d(TAG, "onNext :" + bean);
-                        mView.onLikeMusicSuccess(bean);
+                        mView.onLikeOrUnLikeMusicSuccess(bean, String.valueOf(songId));
                     }
 
                     @Override
@@ -87,14 +94,14 @@ public class SongPresenter extends SongContract.Presenter {
     public void getLikeList(long uid) {
         mModel.getLikeList(uid).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<LikeListBean>() {
+                .subscribe(new Observer<UserLikeData>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         LogUtil.d(TAG, "onSubscribe");
                     }
 
                     @Override
-                    public void onNext(LikeListBean bean) {
+                    public void onNext(UserLikeData bean) {
                         LogUtil.d(TAG, "onNext :" + bean);
                         mView.onGetLikeListSuccess(bean);
                     }

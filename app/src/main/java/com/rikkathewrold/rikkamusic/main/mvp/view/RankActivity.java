@@ -15,8 +15,10 @@ import com.rikkathewrold.rikkamusic.main.bean.BannerBean;
 import com.rikkathewrold.rikkamusic.main.bean.DailyRecommendBean;
 import com.rikkathewrold.rikkamusic.main.bean.HighQualityPlayListBean;
 import com.rikkathewrold.rikkamusic.main.bean.MainRecommendPlayListBean;
+import com.rikkathewrold.rikkamusic.main.bean.PlayListRecommendData;
 import com.rikkathewrold.rikkamusic.main.bean.PlaylistDetailBean;
 import com.rikkathewrold.rikkamusic.main.bean.RecommendPlayListBean;
+import com.rikkathewrold.rikkamusic.main.bean.SongDailyRecommendData;
 import com.rikkathewrold.rikkamusic.main.bean.TopListBean;
 import com.rikkathewrold.rikkamusic.main.mvp.contract.WowContract;
 import com.rikkathewrold.rikkamusic.main.mvp.presenter.WowPresenter;
@@ -42,10 +44,14 @@ import static com.rikkathewrold.rikkamusic.main.mvp.view.fragments.WowFragment.P
 public class RankActivity extends BaseActivity<WowPresenter> implements WowContract.View {
     private static final String TAG = "RankActivity";
 
+    //排行榜列表
     @BindView(R.id.rv_toplist)
     RecyclerView rvTopList;
 
+    //排行榜歌曲列表
     private List<TopListBean.ListBean> list = new ArrayList<>();
+
+    //排行榜adapter
     private RankAdapter adapter;
 
     @Override
@@ -118,7 +124,7 @@ public class RankActivity extends BaseActivity<WowPresenter> implements WowContr
     }
 
     @Override
-    public void onGetRecommendPlayListSuccess(MainRecommendPlayListBean bean) {
+    public void onGetRecommendPlayListSuccess(PlayListRecommendData bean) {
 
     }
 
@@ -128,7 +134,7 @@ public class RankActivity extends BaseActivity<WowPresenter> implements WowContr
     }
 
     @Override
-    public void onGetDailyRecommendSuccess(DailyRecommendBean bean) {
+    public void onGetDailyRecommendSuccess(SongDailyRecommendData bean) {
 
     }
 
@@ -137,6 +143,10 @@ public class RankActivity extends BaseActivity<WowPresenter> implements WowContr
 
     }
 
+    /**
+     * 调用api获取排行接口成功，回调函数
+     * @param bean
+     */
     @Override
     public void onGetTopListSuccess(TopListBean bean) {
         hideDialog();

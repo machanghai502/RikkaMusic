@@ -26,6 +26,7 @@ import com.rikkathewrold.rikkamusic.base.BaseFragment;
 import com.rikkathewrold.rikkamusic.login.bean.LoginBean;
 import com.rikkathewrold.rikkamusic.main.adapter.MultiFragmentPagerAdapter;
 import com.rikkathewrold.rikkamusic.main.bean.LikeListBean;
+import com.rikkathewrold.rikkamusic.main.bean.UserLikeData;
 import com.rikkathewrold.rikkamusic.main.mvp.contract.MainContract;
 import com.rikkathewrold.rikkamusic.main.mvp.presenter.MainPresenter;
 import com.rikkathewrold.rikkamusic.main.mvp.view.fragments.CloudVillageFragment;
@@ -98,7 +99,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
         //发现Fragment
         fragments.add(new WowFragment());
         //云村Fragment
-        fragments.add(new CloudVillageFragment());
+        //fragments.add(new CloudVillageFragment());
         mPagerAdapter.init(fragments);
         Log.i(TAG, "MainActivity.onCreateView");
     }
@@ -132,6 +133,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
 
         setSelectTextBoldAndBig(Objects.requireNonNull(tabTitle.getTabAt(1)));
         initTabListener();
+
         mPresenter.getLikeList(loginBean.getAccount().getId());
     }
 
@@ -270,9 +272,9 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainCon
     }
 
     @Override
-    public void onGetLikeListSuccess(LikeListBean bean) {
+    public void onGetLikeListSuccess(UserLikeData bean) {
         LogUtil.d(TAG, "onGetLikeListSuccess : " + bean);
-        List<Long> idsList = bean.getIds();
+        List<Long> idsList = bean.getSongIdList();
         List<String> likeList = new ArrayList<>();
         for (int i = 0; i < idsList.size(); i++) {
             String ids = String.valueOf(idsList.get(i));

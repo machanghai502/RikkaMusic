@@ -18,6 +18,8 @@ import com.lzx.starrysky.model.SongInfo;
 import com.rikkathewrold.rikkamusic.R;
 import com.rikkathewrold.rikkamusic.base.BaseActivity;
 import com.rikkathewrold.rikkamusic.main.bean.LikeListBean;
+import com.rikkathewrold.rikkamusic.main.bean.Song;
+import com.rikkathewrold.rikkamusic.main.bean.UserLikeData;
 import com.rikkathewrold.rikkamusic.manager.SongPlayManager;
 import com.rikkathewrold.rikkamusic.song.adapter.SongListAdapter;
 import com.rikkathewrold.rikkamusic.song.bean.CommentLikeBean;
@@ -193,7 +195,7 @@ public class SongListActivity extends BaseActivity<SongPresenter> implements Son
     }
 
     @Override
-    public void onGetSongDetailSuccess(SongDetailBean bean) {
+    public void onGetSongDetailSuccess(Song bean) {
 
     }
 
@@ -203,7 +205,7 @@ public class SongListActivity extends BaseActivity<SongPresenter> implements Son
     }
 
     @Override
-    public void onLikeMusicSuccess(LikeMusicBean bean) {
+    public void onLikeOrUnLikeMusicSuccess(Boolean bean, String songId) {
 
     }
 
@@ -213,7 +215,7 @@ public class SongListActivity extends BaseActivity<SongPresenter> implements Son
     }
 
     @Override
-    public void onGetLikeListSuccess(LikeListBean bean) {
+    public void onGetLikeListSuccess(UserLikeData bean) {
 
     }
 

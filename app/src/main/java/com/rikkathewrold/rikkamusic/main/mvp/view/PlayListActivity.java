@@ -33,8 +33,10 @@ import com.rikkathewrold.rikkamusic.main.bean.BannerBean;
 import com.rikkathewrold.rikkamusic.main.bean.DailyRecommendBean;
 import com.rikkathewrold.rikkamusic.main.bean.HighQualityPlayListBean;
 import com.rikkathewrold.rikkamusic.main.bean.MainRecommendPlayListBean;
+import com.rikkathewrold.rikkamusic.main.bean.PlayListRecommendData;
 import com.rikkathewrold.rikkamusic.main.bean.PlaylistDetailBean;
 import com.rikkathewrold.rikkamusic.main.bean.RecommendPlayListBean;
+import com.rikkathewrold.rikkamusic.main.bean.SongDailyRecommendData;
 import com.rikkathewrold.rikkamusic.main.bean.TopListBean;
 import com.rikkathewrold.rikkamusic.main.mvp.contract.WowContract;
 import com.rikkathewrold.rikkamusic.main.mvp.presenter.WowPresenter;
@@ -69,6 +71,7 @@ import static com.rikkathewrold.rikkamusic.main.mvp.view.fragments.WowFragment.P
 
 /**
  * 歌单列表界面
+ * 歌单详情界面
  * 该界面就是充满歌曲的歌单列表
  * <p>
  * Created By Rikka on 2019/7/18
@@ -79,20 +82,33 @@ public class PlayListActivity extends BaseActivity<WowPresenter> implements WowC
     //计算完成后发送的Handler msg
     public static final int COMPLETED = 0;
 
+    //歌单封面图片
     @BindView(R.id.iv_cover)
     RikkaRoundRectView ivCover;
+    //歌单名称
     @BindView(R.id.tv_playlist_name)
     TextView tvListName;
+
+    //歌单创建者头像
     @BindView(R.id.iv_creator_avatar)
     CircleImageView ivCreatorAvatar;
+
+    //歌单创建者名称
     @BindView(R.id.tv_creator_name)
     TextView tvCreatorName;
+
+    //评论次数
     @BindView(R.id.tv_comment)
     TextView tvComment;
+
+    //分享次数
     @BindView(R.id.tv_share)
     TextView tvShare;
+
+    //歌单歌曲列表
     @BindView(R.id.rv_playlist_song)
     RecyclerView rvPlaylist;
+
     @BindView(R.id.bottom_controller)
     BottomSongPlayBar bottomController;
     @BindView(R.id.background)
@@ -104,10 +120,16 @@ public class PlayListActivity extends BaseActivity<WowPresenter> implements WowC
     @BindView(R.id.iv_cover_bg)
     ImageView ivCoverBg;
 
+    //歌曲列表adapter
     private SongListAdapter adapter;
+
+    //歌单的歌曲列表
     private List<PlaylistDetailBean.PlaylistBean.TracksBean> beanList = new ArrayList<>();
 
+    //当前歌单的歌曲列表
     private List<SongInfo> songInfos = new ArrayList<>();
+
+    //歌单id
     private long playlistId;
     private int position = -1;
     int deltaDistance;
@@ -115,6 +137,8 @@ public class PlayListActivity extends BaseActivity<WowPresenter> implements WowC
     private String creatorUrl;
     private ObjectAnimator alphaAnimator;
     private ObjectAnimator coverAlphaAnimator;
+
+    //歌单名称
     private String playlistName;
     private String playlistPicUrl;
     private String creatorName;
@@ -148,9 +172,13 @@ public class PlayListActivity extends BaseActivity<WowPresenter> implements WowC
         rvPlaylist.setLayoutManager(manager);
         rvPlaylist.setAdapter(adapter);
 
+        //getIntent()：Return the intent that started this activity
         if (getIntent() != null) {
+            //歌单封面图片
             playlistPicUrl = getIntent().getStringExtra(PLAYLIST_PICURL);
+            //加载
             Glide.with(this).load(playlistPicUrl).into(ivCover);
+            //歌单名称
             playlistName = getIntent().getStringExtra(PLAYLIST_NAME);
             tvListName.setText(playlistName);
             creatorName = getIntent().getStringExtra(PLAYLIST_CREATOR_NICKNAME);
@@ -167,6 +195,7 @@ public class PlayListActivity extends BaseActivity<WowPresenter> implements WowC
             ivCoverBg.setAlpha(0f);
             showDialog();
             LogUtil.d(TAG, "playlistId : " + playlistId);
+            //获取歌单详情（列表）
             mPresenter.getPlaylistDetail(playlistId);
         }
         minDistance = DensityUtil.dp2px(PlayListActivity.this, 85);
@@ -313,7 +342,7 @@ public class PlayListActivity extends BaseActivity<WowPresenter> implements WowC
     }
 
     @Override
-    public void onGetRecommendPlayListSuccess(MainRecommendPlayListBean bean) {
+    public void onGetRecommendPlayListSuccess(PlayListRecommendData bean) {
 
     }
 
@@ -323,7 +352,7 @@ public class PlayListActivity extends BaseActivity<WowPresenter> implements WowC
     }
 
     @Override
-    public void onGetDailyRecommendSuccess(DailyRecommendBean bean) {
+    public void onGetDailyRecommendSuccess(SongDailyRecommendData bean) {
 
     }
 
@@ -352,16 +381,23 @@ public class PlayListActivity extends BaseActivity<WowPresenter> implements WowC
 
     }
 
+    //获取指定歌单详情（歌曲列表）成功后，回调方法
     @SuppressLint("SetTextI18n")
     @Override
     public void onGetPlaylistDetailSuccess(PlaylistDetailBean bean) {
         hideDialog();
         LogUtil.d(TAG, "onGetPlaylistDetailSuccess : " + bean);
-        if (!TextUtils.isEmpty(creatorUrl)) {
+
+        // TODO: 2021/12/11 注释掉了
+        //歌单创建者头像
+        /*if (!TextUtils.isEmpty(creatorUrl)) {
             Glide.with(this).load(bean.getPlaylist().getCreator().getAvatarUrl()).into(ivCreatorAvatar);
-        }
+        }*/
+
         beanList.addAll(bean.getPlaylist().getTracks());
         songInfos.clear();
+
+        //歌曲信息转黄
         for (int i = 0; i < beanList.size(); i++) {
             SongInfo beanInfo = new SongInfo();
             beanInfo.setArtist(beanList.get(i).getAr().get(0).getName());
@@ -375,6 +411,7 @@ public class PlayListActivity extends BaseActivity<WowPresenter> implements WowC
             songInfos.add(beanInfo);
         }
         adapter.notifyDataSetChanged(songInfos);
+        //设置分享总数
         tvShare.setText(bean.getPlaylist().getShareCount() + "");
         tvComment.setText(bean.getPlaylist().getCommentCount() + "");
 

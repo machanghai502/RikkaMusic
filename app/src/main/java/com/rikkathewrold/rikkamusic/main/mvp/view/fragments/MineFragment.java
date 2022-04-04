@@ -48,15 +48,24 @@ import static com.rikkathewrold.rikkamusic.main.mvp.view.fragments.WowFragment.P
 import static com.rikkathewrold.rikkamusic.main.mvp.view.fragments.WowFragment.PLAYLIST_NAME;
 import static com.rikkathewrold.rikkamusic.main.mvp.view.fragments.WowFragment.PLAYLIST_PICURL;
 
+/**
+ * 我的界面
+ */
 public class MineFragment extends BaseFragment<MinePresenter> implements MineContract.View {
     private static final String TAG = "MineFragment";
 
+    //我的歌单列表
     @BindView(R.id.rv_mine_playlist)
     RecyclerView rvPlayList;
 
     private LoginBean loginBean;
+
+    //用户id
     private long uid;
+    // TODO: 2022/4/4 用户歌单，从哪里创建呢？
     private UserPlaylistAdapter adapter;
+
+    //当前用户下的所有的歌单列表
     private List<UserPlaylistBean.PlaylistBean> playlistBeans = new ArrayList<>();
     private List<PlayListItemBean> adapterList = new ArrayList<>();
 
@@ -75,26 +84,37 @@ public class MineFragment extends BaseFragment<MinePresenter> implements MineCon
     @Override
     protected void initData() {
         loginBean = GsonUtil.fromJSON(SharePreferenceUtil.getInstance(getContext()).getUserInfo(""), LoginBean.class);
+        //用户id
         uid = loginBean.getAccount().getId();
 
+        //用户自己创建的歌单
         adapter = new UserPlaylistAdapter(getContext());
+        //用户歌单
         rvPlayList.setLayoutManager(new LinearLayoutManager(getContext()));
         rvPlayList.setAdapter(adapter);
         adapter.setListener(listener);
         adapter.setShowSmartPlay(true);
         adapter.setName(loginBean.getAccount().getUserName());
 
-        showDialog();
-        mPresenter.getUserPlaylist(uid);
+        // TODO: 2022/4/4 暂时不查询用户的歌单列表
+        //showDialog();
+        //获取指定用户的歌单列表
+        //mPresenter.getUserPlaylist(uid);
     }
 
+
+    //点击歌单事件的监听器,进入歌单详情（包含歌单的歌曲列表）
     UserPlaylistAdapter.OnPlayListItemClickListener listener = new UserPlaylistAdapter.OnPlayListItemClickListener() {
         @Override
         public void onPlayListItemClick(int position) {
             Intent intent = new Intent(getContext(), PlayListActivity.class);
+            //歌单封面
             intent.putExtra(PLAYLIST_PICURL, playlistBeans.get(position).getCoverImgUrl());
+            //歌单名称
             intent.putExtra(PLAYLIST_NAME, playlistBeans.get(position).getName());
+            //歌单创建者昵称
             intent.putExtra(PLAYLIST_CREATOR_NICKNAME, playlistBeans.get(position).getCreator().getNickname());
+            //歌单创建者头像
             intent.putExtra(PLAYLIST_CREATOR_AVATARURL, playlistBeans.get(position).getCreator().getAvatarUrl());
             intent.putExtra(PLAYLIST_ID, playlistBeans.get(position).getId());
             getContext().startActivity(intent);
@@ -118,30 +138,40 @@ public class MineFragment extends BaseFragment<MinePresenter> implements MineCon
     }
 
     @Override
-    @OnClick({R.id.rl_fm, R.id.local_music, R.id.my_radio, R.id.my_collection})
+    //@OnClick({R.id.rl_fm, R.id.local_music, R.id.my_radio, R.id.my_collection})
+    @OnClick({R.id.local_music, R.id.my_radio, R.id.my_collection})
     public void onClick(View v) {
         if (ClickUtil.isFastClick(1000, v)) {
             return;
         }
         Intent intent = new Intent();
         switch (v.getId()) {
-            case R.id.rl_fm:
+            /*case R.id.rl_fm:
+                //私人FM
                 showDialog();
                 mPresenter.getMyFM();
-                break;
+                break;*/
             case R.id.local_music:
+                //本地音乐
                 intent.setClass(getContext(), LocalMusicActivity.class);
                 startActivity(intent);
                 break;
             case R.id.my_radio:
+                //todo 私人电台
                 break;
             case R.id.my_collection:
+                //我的收藏
                 intent.setClass(getContext(), MySubActivity.class);
                 startActivity(intent);
                 break;
         }
     }
 
+
+    /**
+     * 获取个人歌单列表成功 回调函数
+     * @param bean
+     */
     @Override
     public void onGetUserPlaylistSuccess(UserPlaylistBean bean) {
         hideDialog();

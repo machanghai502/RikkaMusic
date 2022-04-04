@@ -8,6 +8,7 @@ import com.lzx.starrysky.manager.OnPlayerEventListener;
 import com.lzx.starrysky.model.SongInfo;
 import com.rikkathewrold.rikkamusic.App;
 import com.rikkathewrold.rikkamusic.api.ApiService;
+import com.rikkathewrold.rikkamusic.main.bean.Song;
 import com.rikkathewrold.rikkamusic.manager.bean.MusicCanPlayBean;
 import com.rikkathewrold.rikkamusic.manager.event.MusicPauseEvent;
 import com.rikkathewrold.rikkamusic.manager.event.MusicStartEvent;
@@ -74,8 +75,8 @@ public class SongPlayManager {
     private HashMap<String, Boolean> musicCanPlayMap;
     //设置监听器
     private SongPlayListener songListener;
-    //维护第二个哈希表，Key是SongId,value是 songDetail，如果歌曲详情已经获取，则不必再获取
-    private HashMap<Long, SongDetailBean> songDetailMap;
+    //维护第二个哈希表，Key是SongId,value是 song，如果歌曲详情已经获取，则不必再获取
+    private HashMap<Long, Song> songDetailMap;
 
     private SongPlayManager() {
         musicCanPlayMap = new HashMap<>();
@@ -576,12 +577,12 @@ public class SongPlayManager {
         this.mode = mode;
     }
 
-    public SongDetailBean getSongDetail(long ids) {
-        return songDetailMap.get(ids);
+    public Song getSongDetail(long songId) {
+        return songDetailMap.get(songId);
     }
 
-    public void putSongDetail(SongDetailBean bean) {
-        songDetailMap.put(bean.getSongs().get(0).getId(), bean);
+    public void putSongDetail(Song bean) {
+        songDetailMap.put(bean.getId(), bean);
     }
 
     /**

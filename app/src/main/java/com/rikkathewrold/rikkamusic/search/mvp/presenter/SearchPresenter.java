@@ -6,6 +6,7 @@ import com.rikkathewrold.rikkamusic.search.bean.HotSearchDetailBean;
 import com.rikkathewrold.rikkamusic.search.bean.PlayListSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.RadioSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.SingerSearchBean;
+import com.rikkathewrold.rikkamusic.search.bean.SongData;
 import com.rikkathewrold.rikkamusic.search.bean.SongSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.SynthesisSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.UserSearchBean;
@@ -60,14 +61,14 @@ public class SearchPresenter extends SearchContract.Presenter {
     public void getSongSearch(String keywords, int type) {
         mModel.getSongSearch(keywords, type).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<SongSearchBean>() {
+                .subscribe(new Observer<SongData>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         LogUtil.d(TAG, "getSongSearch  onSubscribe");
                     }
 
                     @Override
-                    public void onNext(SongSearchBean bean) {
+                    public void onNext(SongData bean) {
                         LogUtil.d(TAG, "getSongSearch onNext :" + bean);
                         mView.onGetSongSearchSuccess(bean);
                     }

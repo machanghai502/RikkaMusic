@@ -21,10 +21,15 @@ import com.rikkathewrold.rikkamusic.main.bean.MainEventBean;
 import com.rikkathewrold.rikkamusic.main.bean.MainRecommendPlayListBean;
 import com.rikkathewrold.rikkamusic.main.bean.MvSublistBean;
 import com.rikkathewrold.rikkamusic.main.bean.MyFmBean;
+import com.rikkathewrold.rikkamusic.main.bean.PlayList;
+import com.rikkathewrold.rikkamusic.main.bean.PlayListRecommendData;
 import com.rikkathewrold.rikkamusic.main.bean.PlayModeIntelligenceBean;
 import com.rikkathewrold.rikkamusic.main.bean.PlaylistDetailBean;
 import com.rikkathewrold.rikkamusic.main.bean.RecommendPlayListBean;
+import com.rikkathewrold.rikkamusic.main.bean.Song;
+import com.rikkathewrold.rikkamusic.main.bean.SongDailyRecommendData;
 import com.rikkathewrold.rikkamusic.main.bean.TopListBean;
+import com.rikkathewrold.rikkamusic.main.bean.UserLikeData;
 import com.rikkathewrold.rikkamusic.manager.bean.MusicCanPlayBean;
 import com.rikkathewrold.rikkamusic.personal.bean.UserDetailBean;
 import com.rikkathewrold.rikkamusic.personal.bean.UserEventBean;
@@ -39,6 +44,7 @@ import com.rikkathewrold.rikkamusic.search.bean.SingerAblumSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.SingerDescriptionBean;
 import com.rikkathewrold.rikkamusic.search.bean.SingerSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.SingerSongSearchBean;
+import com.rikkathewrold.rikkamusic.search.bean.SongData;
 import com.rikkathewrold.rikkamusic.search.bean.SongSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.SynthesisSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.UserSearchBean;
@@ -50,7 +56,9 @@ import com.rikkathewrold.rikkamusic.song.bean.PlayListCommentBean;
 import com.rikkathewrold.rikkamusic.song.bean.SongDetailBean;
 
 import io.reactivex.Observable;
+import retrofit2.http.Field;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 /**
@@ -58,7 +66,7 @@ import retrofit2.http.Query;
  */
 public interface ApiService {
 
-    String BASE_URL = "http://192.168.0.103:8082";
+    String BASE_URL = "http://192.168.0.7:8082";
 
     @GET("login/cellphone")
     Observable<LoginBean> login(@Query("phone") String phone, @Query("password") String password);
@@ -69,11 +77,14 @@ public interface ApiService {
     @GET("banner")
     Observable<BannerBean> getBanner(@Query("type") String type);
 
-    @GET("recommend/resource")
-    Observable<MainRecommendPlayListBean> getRecommendPlayList();
+    @GET("music/playlistrecommend/list")
+    Observable<PlayListRecommendData> getRecommendPlayList();
 
-    @GET("recommend/songs")
-    Observable<DailyRecommendBean> getDailyRecommend();
+    /**
+     * 每日推荐
+     */
+    @GET("music/songdailyrecommend/list")
+    Observable<SongDailyRecommendData> getDailyRecommend();
 
     @GET("toplist")
     Observable<TopListBean> getTopList();
@@ -111,8 +122,8 @@ public interface ApiService {
     @GET("search/hot/detail")
     Observable<HotSearchDetailBean> getSearchHotDetail();
 
-    @GET("search")
-    Observable<SongSearchBean> getSongSearch(@Query("keywords") String keywords, @Query("type") int type);
+    @GET("music/song/search")
+    Observable<SongData> getSongSearch(@Query("name") String name, @Query("type") int type);
 
     @GET("search")
     Observable<FeedSearchBean> getFeedSearch(@Query("keywords") String keywords, @Query("type") int type);
@@ -147,14 +158,19 @@ public interface ApiService {
     @GET("simi/artist")
     Observable<SimiSingerBean> getSimiSinger(@Query("id") long id);
 
-    @GET("likelist")
-    Observable<LikeListBean> getLikeList(@Query("uid") long uid);
 
-    @GET("song/detail")
-    Observable<SongDetailBean> getSongDetail(@Query("ids") long ids);
 
-    @GET("like")
-    Observable<LikeMusicBean> likeMusice(@Query("id") long id);
+    @GET("music/song/detail")
+    Observable<Song> getSongDetail(@Query("id") long songId);
+
+    //@GET("like")
+    //Observable<LikeMusicBean> likeOrUnLikeMusic(@Query("id") long songId);
+
+    @GET("music/userlike/songidlist")
+    Observable<UserLikeData> getLikeList(@Query("uid") long uid);
+
+    @GET("music/userlike/likeorunlike")
+    Observable<Boolean> likeOrUnLikeMusic(@Query("songId") long songId, @Query("uid") long uid);
 
     @GET("comment/music")
     Observable<MusicCommentBean> getMusicComment(@Query("id") long id);

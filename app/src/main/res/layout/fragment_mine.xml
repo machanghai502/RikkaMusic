@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <RelativeLayout
+        <!--<RelativeLayout
             android:id="@+id/rl_fm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
                 android:layout_below="@id/iv_fm"
                 android:text="@string/mine_fm"
                 android:textSize="@dimen/sp_12" />
-        </RelativeLayout>
+        </RelativeLayout>-->
     </RelativeLayout>
 
     <TextView

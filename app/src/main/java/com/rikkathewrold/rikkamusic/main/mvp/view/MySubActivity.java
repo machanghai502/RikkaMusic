@@ -79,8 +79,7 @@ public class MySubActivity extends BaseActivity<MinePresenter> implements MineCo
         vpFragment.setAdapter(pagerAdapter);
         vpFragment.setOffscreenPageLimit(3);
         tabLayout.setViewPager(vpFragment);
-        tabLayout.setCurrentTab(1);
-
+        tabLayout.setCurrentTab(0);
 
     }
 

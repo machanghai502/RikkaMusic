@@ -2,6 +2,7 @@ package com.rikkathewrold.rikkamusic.main.mvp.presenter;
 
 import com.rikkathewrold.rikkamusic.main.bean.LikeListBean;
 import com.rikkathewrold.rikkamusic.main.bean.LogoutBean;
+import com.rikkathewrold.rikkamusic.main.bean.UserLikeData;
 import com.rikkathewrold.rikkamusic.main.mvp.contract.MainContract;
 import com.rikkathewrold.rikkamusic.main.mvp.model.MainModel;
 import com.rikkathewrold.rikkamusic.util.LogUtil;
@@ -51,14 +52,14 @@ public class MainPresenter extends MainContract.Presenter {
     public void getLikeList(long uid) {
         mModel.getLikeList(uid).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<LikeListBean>() {
+                .subscribe(new Observer<UserLikeData>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         LogUtil.d(TAG, "onSubscribe");
                     }
 
                     @Override
-                    public void onNext(LikeListBean bean) {
+                    public void onNext(UserLikeData bean) {
                         LogUtil.d(TAG, "onNext :" + bean);
                         mView.onGetLikeListSuccess(bean);
                     }

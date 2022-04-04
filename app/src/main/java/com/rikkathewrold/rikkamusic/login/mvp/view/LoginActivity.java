@@ -76,6 +76,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
 //        InputUtil.dismissInputMethod(this);
         switch (v.getId()) {
             case R.id.btn_login:
+                //登录操作
                 phoneNumber = etPhone.getText().toString().trim();
                 password = etPwd.getText().toString().trim();
                 if (InputUtil.checkMobileLegal(phoneNumber) && InputUtil.checkPasswordLegal(password)) {

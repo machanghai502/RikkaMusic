@@ -15,8 +15,10 @@ import com.rikkathewrold.rikkamusic.main.bean.BannerBean;
 import com.rikkathewrold.rikkamusic.main.bean.DailyRecommendBean;
 import com.rikkathewrold.rikkamusic.main.bean.HighQualityPlayListBean;
 import com.rikkathewrold.rikkamusic.main.bean.MainRecommendPlayListBean;
+import com.rikkathewrold.rikkamusic.main.bean.PlayListRecommendData;
 import com.rikkathewrold.rikkamusic.main.bean.PlaylistDetailBean;
 import com.rikkathewrold.rikkamusic.main.bean.RecommendPlayListBean;
+import com.rikkathewrold.rikkamusic.main.bean.SongDailyRecommendData;
 import com.rikkathewrold.rikkamusic.main.bean.TopListBean;
 import com.rikkathewrold.rikkamusic.main.mvp.contract.WowContract;
 import com.rikkathewrold.rikkamusic.main.mvp.presenter.WowPresenter;
@@ -147,7 +149,7 @@ public class PlayListRecommendActivity extends BaseActivity<WowPresenter> implem
     }
 
     @Override
-    public void onGetRecommendPlayListSuccess(MainRecommendPlayListBean bean) {
+    public void onGetRecommendPlayListSuccess(PlayListRecommendData bean) {
 
     }
 
@@ -157,7 +159,7 @@ public class PlayListRecommendActivity extends BaseActivity<WowPresenter> implem
     }
 
     @Override
-    public void onGetDailyRecommendSuccess(DailyRecommendBean bean) {
+    public void onGetDailyRecommendSuccess(SongDailyRecommendData bean) {
 
     }
 

@@ -26,8 +26,11 @@ import com.rikkathewrold.rikkamusic.main.bean.DRGreenDaoBean;
 import com.rikkathewrold.rikkamusic.main.bean.DailyRecommendBean;
 import com.rikkathewrold.rikkamusic.main.bean.HighQualityPlayListBean;
 import com.rikkathewrold.rikkamusic.main.bean.MainRecommendPlayListBean;
+import com.rikkathewrold.rikkamusic.main.bean.PlayListRecommendData;
 import com.rikkathewrold.rikkamusic.main.bean.PlaylistDetailBean;
 import com.rikkathewrold.rikkamusic.main.bean.RecommendPlayListBean;
+import com.rikkathewrold.rikkamusic.main.bean.Song;
+import com.rikkathewrold.rikkamusic.main.bean.SongDailyRecommendData;
 import com.rikkathewrold.rikkamusic.main.bean.TopListBean;
 import com.rikkathewrold.rikkamusic.main.mvp.contract.WowContract;
 import com.rikkathewrold.rikkamusic.main.mvp.presenter.WowPresenter;
@@ -83,7 +86,7 @@ public class DailyRecommendActivity extends BaseActivity<WowPresenter> implement
     RelativeLayout rlPlay;
 
     //日推集合//每日推荐集合
-    private List<DailyRecommendBean.RecommendBean> dailyList = new ArrayList<>();
+    private List<Song> dailyList = new ArrayList<>();
 
     //每日推荐歌曲列表信息
     private List<SongInfo> songInfos = new ArrayList<>();
@@ -121,7 +124,7 @@ public class DailyRecommendActivity extends BaseActivity<WowPresenter> implement
         dailyList.clear();
 
         songAdapter = new SongListAdapter(this);
-        songAdapter.setType(1);
+        songAdapter.setType(2);
 
         rvDailyRecommend.setLayoutManager(new LinearLayoutManager(this));
         rvDailyRecommend.setAdapter(songAdapter);
@@ -147,11 +150,11 @@ public class DailyRecommendActivity extends BaseActivity<WowPresenter> implement
         tvMonth.setText("/" + TimeUtil.getMonth(System.currentTimeMillis()));
 
         //每日推荐更新时间
-        long updateTime = SharePreferenceUtil.getInstance(this).getDailyUpdateTime();
-        LogUtil.d(TAG, "上次日推更新时间： " + TimeUtil.getTimeStandard(updateTime));
+        /*long updateTime = SharePreferenceUtil.getInstance(this).getDailyUpdateTime();
+        LogUtil.d(TAG, "上次日推更新时间： " + TimeUtil.getTimeStandard(updateTime));*/
 
         //上次更新日推时间小于当天7点，则更新日推
-        if (!TimeUtil.isOver7am(updateTime)) {
+        /*if (!TimeUtil.isOver7am(updateTime)) {
             DailyRecommendDaoOp.deleteAllData(this);
             LogUtil.d(TAG, "getDailyRecommend");
             showDialog();
@@ -167,7 +170,11 @@ public class DailyRecommendActivity extends BaseActivity<WowPresenter> implement
                 showDialog();
                 mPresenter.getDailyRecommend();
             }
-        }
+        }*/
+
+        //todo 每次都直接从后台数据库中获取
+        showDialog();
+        mPresenter.getDailyRecommend();
 
         minDistance = DensityUtil.dp2px(DailyRecommendActivity.this, 85);
         deltaDistance = DensityUtil.dp2px(DailyRecommendActivity.this, 200) - minDistance;
@@ -264,7 +271,7 @@ public class DailyRecommendActivity extends BaseActivity<WowPresenter> implement
     }
 
     @Override
-    public void onGetRecommendPlayListSuccess(MainRecommendPlayListBean bean) {
+    public void onGetRecommendPlayListSuccess(PlayListRecommendData bean) {
 
     }
 
@@ -275,29 +282,40 @@ public class DailyRecommendActivity extends BaseActivity<WowPresenter> implement
 
     //调用api接口，获取每日推荐成功方法
     @Override
-    public void onGetDailyRecommendSuccess(DailyRecommendBean bean) {
+    public void onGetDailyRecommendSuccess(SongDailyRecommendData bean) {
         hideDialog();
         LogUtil.d(TAG, "onGetDailyRecommendSuccess : " + bean);
         SharePreferenceUtil.getInstance(this).saveDailyUpdateTime(System.currentTimeMillis());
-        dailyList.addAll(bean.getRecommend());
+        dailyList.addAll(bean.getSongs());
 
-        greenDaoList.clear();
+        // TODO: 2022/4/4  修改为每次都从数据库中获取
+        //greenDaoList.clear();
+
         for (int i = 0; i < dailyList.size(); i++) {
+            Song song = dailyList.get(i);
             DRGreenDaoBean listInfo = new DRGreenDaoBean();
-            listInfo.setSongId(String.valueOf(bean.getRecommend().get(i).getId()));
-            listInfo.setSongName(bean.getRecommend().get(i).getName());
-            listInfo.setArtist(bean.getRecommend().get(i).getArtists().get(0).getName());
-            listInfo.setSongCover(bean.getRecommend().get(i).getAlbum().getPicUrl());
-            listInfo.setSongUrl(SONG_URL + bean.getRecommend().get(i).getId() + ".mp3");
-            listInfo.setDuration(bean.getRecommend().get(i).getDuration());
-            listInfo.setArtistId(String.valueOf(bean.getRecommend().get(i).getArtists().get(0).getId()));
-            listInfo.setArtistAvatar(bean.getRecommend().get(i).getArtists().get(0).getPicUrl());
+            listInfo.setSongId(song.getId().toString());
+            listInfo.setSongName(song.getName());
+
+            listInfo.setSongCover(song.getPic());
+            listInfo.setSongUrl(SONG_URL + song.getUrl());
+            //todo 没有数据
+            //listInfo.setDuration(bean.getRecommend().get(i).getDuration());
+            listInfo.setDuration(3);
+
+            //todo 暂时默认歌手
+            //listInfo.setArtist(bean.getRecommend().get(i).getArtists().get(0).getName());
+            listInfo.setArtist("默认歌手");
+            listInfo.setArtistId(song.getSingerId());
+            //
+            //listInfo.setArtistAvatar(bean.getRecommend().get(i).getArtists().get(0).getPicUrl());
+            listInfo.setArtistAvatar("http://p1.music.126.net/ULOn30612l-96hKgIy18tA==/18787355185828647.jpg");
             greenDaoList.add(listInfo);
         }
 
         //先删除GreenDao里的所有数据，再将日推存储到GreenDao
-        //todo 数据库
-        DailyRecommendDaoOp.saveData(this, greenDaoList);
+        //TODO: 2022/4/4  修改为每次都从数据库中获取
+        //DailyRecommendDaoOp.saveData(this, greenDaoList);
 
         //更新歌曲列表
         notifyAdapter(greenDaoList);

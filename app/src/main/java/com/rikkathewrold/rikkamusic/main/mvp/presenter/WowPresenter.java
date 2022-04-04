@@ -4,8 +4,11 @@ import com.rikkathewrold.rikkamusic.main.bean.BannerBean;
 import com.rikkathewrold.rikkamusic.main.bean.DailyRecommendBean;
 import com.rikkathewrold.rikkamusic.main.bean.HighQualityPlayListBean;
 import com.rikkathewrold.rikkamusic.main.bean.MainRecommendPlayListBean;
+import com.rikkathewrold.rikkamusic.main.bean.PlayList;
+import com.rikkathewrold.rikkamusic.main.bean.PlayListRecommendData;
 import com.rikkathewrold.rikkamusic.main.bean.PlaylistDetailBean;
 import com.rikkathewrold.rikkamusic.main.bean.RecommendPlayListBean;
+import com.rikkathewrold.rikkamusic.main.bean.SongDailyRecommendData;
 import com.rikkathewrold.rikkamusic.main.bean.TopListBean;
 import com.rikkathewrold.rikkamusic.main.mvp.contract.WowContract;
 import com.rikkathewrold.rikkamusic.main.mvp.model.WowModel;
@@ -59,16 +62,16 @@ public class WowPresenter extends WowContract.Presenter {
     public void getRecommendPlayList() {
         mModel.getRecommendPlayList().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<MainRecommendPlayListBean>() {
+                .subscribe(new Observer<PlayListRecommendData>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         LogUtil.d(TAG, "getRecommendPlayList onSubscribe");
                     }
 
                     @Override
-                    public void onNext(MainRecommendPlayListBean recommendPlayListBean) {
-                        LogUtil.d(TAG, "getRecommendPlayList onNext" + recommendPlayListBean.toString());
-                        mView.onGetRecommendPlayListSuccess(recommendPlayListBean);
+                    public void onNext(PlayListRecommendData playListRecommendData) {
+                        LogUtil.d(TAG, "getRecommendPlayList onNext:" + playListRecommendData.toString());
+                        mView.onGetRecommendPlayListSuccess(playListRecommendData);
                     }
 
                     @Override
@@ -89,14 +92,14 @@ public class WowPresenter extends WowContract.Presenter {
     public void getDailyRecommend() {
         mModel.getDailyRecommend().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<DailyRecommendBean>() {
+                .subscribe(new Observer<SongDailyRecommendData>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         LogUtil.d(TAG, "getDailyRecommend Subscribe");
                     }
 
                     @Override
-                    public void onNext(DailyRecommendBean bean) {
+                    public void onNext(SongDailyRecommendData bean) {
                         LogUtil.d(TAG, "getDailyRecommend onNext" + bean);
                         mView.onGetDailyRecommendSuccess(bean);
                     }
@@ -126,13 +129,13 @@ public class WowPresenter extends WowContract.Presenter {
 
                     @Override
                     public void onNext(TopListBean bean) {
-                        LogUtil.d(TAG, "onNext : " + bean);
+                        LogUtil.d(TAG, "getTopList onNext : " + bean);
                         mView.onGetTopListSuccess(bean);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        LogUtil.e(TAG, e.getMessage());
+                        LogUtil.e(TAG, "getTopList:" + e.getMessage());
                         mView.onGetTopListFail(e.getMessage());
                     }
 
@@ -172,6 +175,7 @@ public class WowPresenter extends WowContract.Presenter {
                 });
     }
 
+    //获取歌单列表详情
     @Override
     public void getPlaylistDetail(long id) {
         mModel.getPlaylistDetail(id).subscribeOn(Schedulers.io())
@@ -190,7 +194,7 @@ public class WowPresenter extends WowContract.Presenter {
 
                     @Override
                     public void onError(Throwable e) {
-                        LogUtil.e(TAG, "onError : " + e);
+                        LogUtil.e(TAG, "getPlaylistDetail onError : " + e);
                         mView.onGetPlaylistDetailFail(e.getMessage());
                     }
 

@@ -5,8 +5,11 @@ import com.rikkathewrold.rikkamusic.main.bean.BannerBean;
 import com.rikkathewrold.rikkamusic.main.bean.DailyRecommendBean;
 import com.rikkathewrold.rikkamusic.main.bean.HighQualityPlayListBean;
 import com.rikkathewrold.rikkamusic.main.bean.MainRecommendPlayListBean;
+import com.rikkathewrold.rikkamusic.main.bean.PlayList;
+import com.rikkathewrold.rikkamusic.main.bean.PlayListRecommendData;
 import com.rikkathewrold.rikkamusic.main.bean.PlaylistDetailBean;
 import com.rikkathewrold.rikkamusic.main.bean.RecommendPlayListBean;
+import com.rikkathewrold.rikkamusic.main.bean.SongDailyRecommendData;
 import com.rikkathewrold.rikkamusic.main.bean.TopListBean;
 import com.rikkathewrold.rikkamusic.main.mvp.contract.WowContract;
 import com.rikkathewrold.rikkamusic.manager.bean.MusicCanPlayBean;
@@ -20,12 +23,12 @@ public class WowModel implements WowContract.Model {
     }
 
     @Override
-    public Observable<MainRecommendPlayListBean> getRecommendPlayList() {
+    public Observable<PlayListRecommendData> getRecommendPlayList() {
         return ApiEngine.getInstance().getApiService().getRecommendPlayList();
     }
 
     @Override
-    public Observable<DailyRecommendBean> getDailyRecommend() {
+    public Observable<SongDailyRecommendData> getDailyRecommend() {
         return ApiEngine.getInstance().getApiService().getDailyRecommend();
     }
 

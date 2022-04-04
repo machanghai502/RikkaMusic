@@ -3,6 +3,8 @@ package com.rikkathewrold.rikkamusic.song.mvp.model;
 
 import com.rikkathewrold.rikkamusic.api.ApiEngine;
 import com.rikkathewrold.rikkamusic.main.bean.LikeListBean;
+import com.rikkathewrold.rikkamusic.main.bean.Song;
+import com.rikkathewrold.rikkamusic.main.bean.UserLikeData;
 import com.rikkathewrold.rikkamusic.song.bean.CommentLikeBean;
 import com.rikkathewrold.rikkamusic.song.bean.LikeMusicBean;
 import com.rikkathewrold.rikkamusic.song.bean.LyricBean;
@@ -15,17 +17,17 @@ import io.reactivex.Observable;
 
 public class SongModel implements SongContract.Model {
     @Override
-    public Observable<SongDetailBean> getSongDetail(long ids) {
-        return ApiEngine.getInstance().getApiService().getSongDetail(ids);
+    public Observable<Song> getSongDetail(long songId) {
+        return ApiEngine.getInstance().getApiService().getSongDetail(songId);
     }
 
     @Override
-    public Observable<LikeMusicBean> likeMusic(long id) {
-        return ApiEngine.getInstance().getApiService().likeMusice(id);
+    public Observable<Boolean> likeOrUnLikeMusic(long songId, long uid) {
+        return ApiEngine.getInstance().getApiService().likeOrUnLikeMusic(songId, uid);
     }
 
     @Override
-    public Observable<LikeListBean> getLikeList(long uid) {
+    public Observable<UserLikeData> getLikeList(long uid) {
         return ApiEngine.getInstance().getApiService().getLikeList(uid);
     }
 

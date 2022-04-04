@@ -7,8 +7,11 @@ import com.rikkathewrold.rikkamusic.main.bean.BannerBean;
 import com.rikkathewrold.rikkamusic.main.bean.DailyRecommendBean;
 import com.rikkathewrold.rikkamusic.main.bean.HighQualityPlayListBean;
 import com.rikkathewrold.rikkamusic.main.bean.MainRecommendPlayListBean;
+import com.rikkathewrold.rikkamusic.main.bean.PlayList;
+import com.rikkathewrold.rikkamusic.main.bean.PlayListRecommendData;
 import com.rikkathewrold.rikkamusic.main.bean.PlaylistDetailBean;
 import com.rikkathewrold.rikkamusic.main.bean.RecommendPlayListBean;
+import com.rikkathewrold.rikkamusic.main.bean.SongDailyRecommendData;
 import com.rikkathewrold.rikkamusic.main.bean.TopListBean;
 import com.rikkathewrold.rikkamusic.manager.bean.MusicCanPlayBean;
 
@@ -21,11 +24,11 @@ public interface WowContract {
 
         void onGetBannerFail(String e);
 
-        void onGetRecommendPlayListSuccess(MainRecommendPlayListBean bean);
+        void onGetRecommendPlayListSuccess(PlayListRecommendData playListRecommendData);
 
         void onGetRecommendPlayListFail(String e);
 
-        void onGetDailyRecommendSuccess(DailyRecommendBean bean);
+        void onGetDailyRecommendSuccess(SongDailyRecommendData bean);
 
         void onGetDailyRecommendFail(String e);
 
@@ -53,9 +56,9 @@ public interface WowContract {
     interface Model extends BaseModel {
         Observable<BannerBean> getBanner();
 
-        Observable<MainRecommendPlayListBean> getRecommendPlayList();
+        Observable<PlayListRecommendData> getRecommendPlayList();
 
-        Observable<DailyRecommendBean> getDailyRecommend();
+        Observable<SongDailyRecommendData> getDailyRecommend();
 
         Observable<TopListBean> getTopList();
 

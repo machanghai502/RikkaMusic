@@ -13,6 +13,8 @@ import com.hjq.toast.ToastUtils;
 import com.rikkathewrold.rikkamusic.R;
 import com.rikkathewrold.rikkamusic.base.BaseActivity;
 import com.rikkathewrold.rikkamusic.main.bean.LikeListBean;
+import com.rikkathewrold.rikkamusic.main.bean.Song;
+import com.rikkathewrold.rikkamusic.main.bean.UserLikeData;
 import com.rikkathewrold.rikkamusic.song.adapter.CommentAdapter;
 import com.rikkathewrold.rikkamusic.song.bean.CommentLikeBean;
 import com.rikkathewrold.rikkamusic.song.bean.LikeMusicBean;
@@ -130,7 +132,7 @@ public class CommentActivity extends BaseActivity<SongPresenter> implements Song
     }
 
     @Override
-    public void onGetSongDetailSuccess(SongDetailBean bean) {
+    public void onGetSongDetailSuccess(Song bean) {
 
     }
 
@@ -140,7 +142,7 @@ public class CommentActivity extends BaseActivity<SongPresenter> implements Song
     }
 
     @Override
-    public void onLikeMusicSuccess(LikeMusicBean bean) {
+    public void onLikeOrUnLikeMusicSuccess(Boolean bean, String songId) {
 
     }
 
@@ -150,7 +152,7 @@ public class CommentActivity extends BaseActivity<SongPresenter> implements Song
     }
 
     @Override
-    public void onGetLikeListSuccess(LikeListBean bean) {
+    public void onGetLikeListSuccess(UserLikeData bean) {
 
     }
 

@@ -37,6 +37,9 @@ import static com.rikkathewrold.rikkamusic.main.mvp.view.fragments.WowFragment.P
 import static com.rikkathewrold.rikkamusic.main.mvp.view.fragments.WowFragment.PLAYLIST_NAME;
 import static com.rikkathewrold.rikkamusic.main.mvp.view.fragments.WowFragment.PLAYLIST_PICURL;
 
+/**
+ * 我的收藏-专辑
+ */
 public class MyAlbumSubFragment extends BaseFragment<MinePresenter> implements MineContract.View {
     private static final String TAG = "MyAlbumSubFragment";
 

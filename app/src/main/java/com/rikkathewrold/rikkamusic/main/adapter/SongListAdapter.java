@@ -79,7 +79,7 @@ public class SongListAdapter extends BaseAdapter<RecyclerView.ViewHolder, SongIn
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
 
         //todo  indexOutBoundException
-        // todo E/SongListAdapter: Index: 4, Size: 3
+        // todo E/SongListAdapter: Index: 4, Size: 3  在创建adapter的时候设置了type=1
         try {
             if (viewHolder instanceof ViewHolder) {
                 if (list == null || list.isEmpty()) {
@@ -87,6 +87,7 @@ public class SongListAdapter extends BaseAdapter<RecyclerView.ViewHolder, SongIn
                 }
                 ViewHolder vh = (ViewHolder) viewHolder;
                 Log.i(TAG, "========size:" + list.size());
+
                 SongInfo bean = list.get(position);
                 if (type == 3) {
                     vh.setSongInfo(mContext, bean, keywords);

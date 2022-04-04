@@ -5,6 +5,7 @@ import com.rikkathewrold.rikkamusic.base.BasePresenter;
 import com.rikkathewrold.rikkamusic.base.BaseView;
 import com.rikkathewrold.rikkamusic.main.bean.LikeListBean;
 import com.rikkathewrold.rikkamusic.main.bean.LogoutBean;
+import com.rikkathewrold.rikkamusic.main.bean.UserLikeData;
 
 import io.reactivex.Observable;
 
@@ -15,7 +16,7 @@ public interface MainContract {
 
         void onLogoutFail(String e);
 
-        void onGetLikeListSuccess(LikeListBean bean);
+        void onGetLikeListSuccess(UserLikeData bean);
 
         void onGetLikeListFail(String e);
     }
@@ -23,7 +24,7 @@ public interface MainContract {
     interface Model extends BaseModel {
         Observable<LogoutBean> logout();
 
-        Observable<LikeListBean> getLikeList(long uid);
+        Observable<UserLikeData> getLikeList(long uid);
     }
 
     abstract class Presenter extends BasePresenter<View, Model> {

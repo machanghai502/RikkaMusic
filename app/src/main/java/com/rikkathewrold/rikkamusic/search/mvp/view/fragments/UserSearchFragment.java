@@ -20,6 +20,7 @@ import com.rikkathewrold.rikkamusic.search.bean.HotSearchDetailBean;
 import com.rikkathewrold.rikkamusic.search.bean.PlayListSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.RadioSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.SingerSearchBean;
+import com.rikkathewrold.rikkamusic.search.bean.SongData;
 import com.rikkathewrold.rikkamusic.search.bean.SongSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.SynthesisSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.UserSearchBean;
@@ -161,7 +162,7 @@ public class UserSearchFragment extends BaseFragment<SearchPresenter> implements
     }
 
     @Override
-    public void onGetSongSearchSuccess(SongSearchBean bean) {
+    public void onGetSongSearchSuccess(SongData bean) {
 
     }
 

@@ -26,7 +26,9 @@ import com.rikkathewrold.rikkamusic.widget.SearchEditText;
 public abstract class BaseActivity<P extends BasePresenter> extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "BaseActivity";
 
-    public static final String SONG_URL = "http://music.163.com/song/media/outer/url?id=";
+    //public static final String SONG_URL = "http://music.163.com/song/media/outer/url?id=";
+
+    public static final String SONG_URL = "http://music.4pdf.link";
 
     protected P mPresenter;
 

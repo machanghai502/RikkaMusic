@@ -129,6 +129,8 @@ public class SharePreferenceUtil {
         saveString(Constants.SpKey.LIKE_LIST, likeListString);
     }
 
+    //List中是歌曲ID列表
+    //获取喜欢的歌曲列表
     public List<String> getLikeList() {
         String likeListString = getString(Constants.SpKey.LIKE_LIST, "");
         return GsonUtil.fromJSON(likeListString, List.class);

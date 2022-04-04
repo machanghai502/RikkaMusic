@@ -3,6 +3,7 @@ package com.rikkathewrold.rikkamusic.search.mvp.view;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import com.flyco.tablayout.SlidingTabLayout;
@@ -20,6 +21,7 @@ import com.rikkathewrold.rikkamusic.search.bean.PlayListSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.RadioSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.SearchHistoryBean;
 import com.rikkathewrold.rikkamusic.search.bean.SingerSearchBean;
+import com.rikkathewrold.rikkamusic.search.bean.SongData;
 import com.rikkathewrold.rikkamusic.search.bean.SongSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.SynthesisSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.UserSearchBean;
@@ -64,6 +66,8 @@ public class SearchResultActivity extends BaseActivity<SearchPresenter> implemen
     private List<BaseFragment> fragments = new ArrayList<>();
     private List<SearchHistoryBean> stringList = new ArrayList<>();
     private MultiFragmentPagerAdapter pagerAdapter;
+
+    //搜索关键字
     private String keywords;
 
     @Override
@@ -77,6 +81,7 @@ public class SearchResultActivity extends BaseActivity<SearchPresenter> implemen
 
         pagerAdapter = new MultiFragmentPagerAdapter(getSupportFragmentManager());
         fragments.add(new SongSearchFragment("单曲"));
+        // TODO: 2022/4/4 当前只搜索单曲
         fragments.add(new FeedSearchFragment("视频"));
         fragments.add(new SingerSearchFragment("歌手"));
         fragments.add(new AlbumSearchFragment("专辑"));
@@ -122,6 +127,7 @@ public class SearchResultActivity extends BaseActivity<SearchPresenter> implemen
     @Override
     @OnClick({R.id.btn_search})
     public void onClick(View v) {
+        //ToastUtils.show("请输入关键字！");
         if (ClickUtil.isFastClick(1000, v)) {
             return;
         }
@@ -175,7 +181,7 @@ public class SearchResultActivity extends BaseActivity<SearchPresenter> implemen
     }
 
     @Override
-    public void onGetSongSearchSuccess(SongSearchBean bean) {
+    public void onGetSongSearchSuccess(SongData bean) {
 
     }
 

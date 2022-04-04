@@ -18,9 +18,12 @@ import com.rikkathewrold.rikkamusic.main.bean.BannerBean;
 import com.rikkathewrold.rikkamusic.main.bean.DailyRecommendBean;
 import com.rikkathewrold.rikkamusic.main.bean.HighQualityPlayListBean;
 import com.rikkathewrold.rikkamusic.main.bean.MainRecommendPlayListBean;
+import com.rikkathewrold.rikkamusic.main.bean.PlayList;
+import com.rikkathewrold.rikkamusic.main.bean.PlayListRecommendData;
 import com.rikkathewrold.rikkamusic.main.bean.PlaylistBean;
 import com.rikkathewrold.rikkamusic.main.bean.PlaylistDetailBean;
 import com.rikkathewrold.rikkamusic.main.bean.RecommendPlayListBean;
+import com.rikkathewrold.rikkamusic.main.bean.SongDailyRecommendData;
 import com.rikkathewrold.rikkamusic.main.bean.TopListBean;
 import com.rikkathewrold.rikkamusic.main.mvp.contract.WowContract;
 import com.rikkathewrold.rikkamusic.main.mvp.presenter.WowPresenter;
@@ -44,13 +47,20 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+/**
+ * 发现
+ */
 public class WowFragment extends BaseFragment<WowPresenter> implements WowContract.View {
     private static final String TAG = "WowFragment";
-
+    //歌单名称
     public static final String PLAYLIST_NAME = "playlistName";
+    //歌单图片
     public static final String PLAYLIST_PICURL = "playlistPicUrl";
+    //歌单创建者昵称
     public static final String PLAYLIST_CREATOR_NICKNAME = "playlistCreatorNickname";
+    //歌单创建者头像
     public static final String PLAYLIST_CREATOR_AVATARURL = "playlistCreatorAvatarUrl";
+    //歌单ID
     public static final String PLAYLIST_ID = "playlistId";
 
     //banner
@@ -70,7 +80,7 @@ public class WowFragment extends BaseFragment<WowPresenter> implements WowContra
     List<BannerBean.BannersBean> banners = new ArrayList<>();
 
     //推荐歌单集合
-    List<MainRecommendPlayListBean.RecommendBean> recommends = new ArrayList<>();
+    List<PlayList> recommends = new ArrayList<>();
 
     //？？
     List<PlaylistBean> list = new ArrayList<>();
@@ -100,7 +110,7 @@ public class WowFragment extends BaseFragment<WowPresenter> implements WowContra
         //推荐歌单合集
         recommends.clear();
         recommendPlayListAdapter = new PlayListAdapter(getContext());
-        recommendPlayListAdapter.setType(1);
+        recommendPlayListAdapter.setType(2);
         GridLayoutManager manager = new GridLayoutManager(getContext(), 3);
         rvRecommendPlayList.setLayoutManager(manager);
         rvRecommendPlayList.setHasFixedSize(true);
@@ -110,7 +120,7 @@ public class WowFragment extends BaseFragment<WowPresenter> implements WowContra
         //从网络中获取banner信息
         mPresenter.getBanner();
 
-        //从网络中获取
+        //从网络中获取推荐歌单
         mPresenter.getRecommendPlayList();
     }
 
@@ -152,8 +162,10 @@ public class WowFragment extends BaseFragment<WowPresenter> implements WowContra
     }
 
     @Override
-    @OnClick({R.id.rl_day_rec, R.id.rl_play_list, R.id.rl_rank, R.id.rl_radio, R.id.rl_live,
-            R.id.tv_playlist_playground})
+    /*@OnClick({R.id.rl_day_rec, R.id.rl_play_list, R.id.rl_rank, R.id.rl_radio, R.id.rl_live,
+            R.id.tv_playlist_playground})*/
+    //@OnClick({R.id.rl_day_rec, R.id.rl_play_list, R.id.rl_rank})
+    @OnClick({R.id.rl_day_rec, R.id.rl_rank})
     public void onClick(View v) {
         if (ClickUtil.isFastClick(1000, v)) {
             return;
@@ -163,15 +175,15 @@ public class WowFragment extends BaseFragment<WowPresenter> implements WowContra
                 //每日推荐
                 startActivity(new Intent(activity, DailyRecommendActivity.class));
                 break;
-            case R.id.rl_play_list:
+            /*case R.id.rl_play_list:
                 //歌单
                 startActivity(new Intent(activity, PlayListRecommendActivity.class));
-                break;
+                break;*/
             case R.id.rl_rank:
                 //排行榜
                 startActivity(new Intent(activity, RankActivity.class));
                 break;
-            case R.id.rl_radio:
+            /*case R.id.rl_radio:
                 //电台
                 startActivity(new Intent(activity, RadioRecommendActivity.class));
                 break;
@@ -182,7 +194,7 @@ public class WowFragment extends BaseFragment<WowPresenter> implements WowContra
             case R.id.tv_playlist_playground:
                 //歌单广场
                 startActivity(new Intent(activity, PlayListRecommendActivity.class));
-                break;
+                break;*/
         }
     }
 
@@ -194,17 +206,17 @@ public class WowFragment extends BaseFragment<WowPresenter> implements WowContra
 
     /**
      * 获取推荐歌单成功调用的方法
-     * @param bean
+     * @param playListRecommendData
      */
     @Override
-    public void onGetRecommendPlayListSuccess(MainRecommendPlayListBean bean) {
+    public void onGetRecommendPlayListSuccess(PlayListRecommendData playListRecommendData) {
         hideDialog();
-        LogUtil.d(TAG, "onGetRecommendPlayListSuccess" + bean);
-        recommends.addAll(bean.getRecommend());
+        LogUtil.d(TAG, "onGetRecommendPlayListSuccess" + playListRecommendData);
+        recommends.addAll(playListRecommendData.getPlayLists());
         for (int i = 0; i < recommends.size(); i++) {
             PlaylistBean beanInfo = new PlaylistBean();
-            beanInfo.setPlaylistName(recommends.get(i).getName());
-            beanInfo.setPlaylistCoverUrl(recommends.get(i).getPicUrl());
+            beanInfo.setPlaylistName(recommends.get(i).getTitle());
+            beanInfo.setPlaylistCoverUrl(recommends.get(i).getPic());
             list.add(beanInfo);
         }
         recommendPlayListAdapter.setListener(listClickListener);
@@ -216,16 +228,20 @@ public class WowFragment extends BaseFragment<WowPresenter> implements WowContra
         if (recommends != null && !recommends.isEmpty()) {
             //进入歌单详情页面
             Intent intent = new Intent(getActivity(), PlayListActivity.class);
-            MainRecommendPlayListBean.RecommendBean bean = recommends.get(position);
-            String playlistName = bean.getName();
+            PlayList playList = recommends.get(position);
+            String playlistName = playList.getTitle();
             intent.putExtra(PLAYLIST_NAME, playlistName);
-            String playlistPicUrl = bean.getPicUrl();
+            String playlistPicUrl = playList.getPic();
             intent.putExtra(PLAYLIST_PICURL, playlistPicUrl);
-            String playlistCreatorNickname = bean.getCreator().getNickname();
+            //todo
+            //String playlistCreatorNickname = playList.getCreator().getNickname();
+            String playlistCreatorNickname = "admin";
             intent.putExtra(PLAYLIST_CREATOR_NICKNAME, playlistCreatorNickname);
-            String playlistCreatorAvatarUrl = bean.getCreator().getAvatarUrl();
+            //todo
+            //String playlistCreatorAvatarUrl = bean.getCreator().getAvatarUrl();
+            String playlistCreatorAvatarUrl = "https://p1.music.126.net/QWMV-Ru_6149AKe0mCBXKg==/1420569024374784.jpg";
             intent.putExtra(PLAYLIST_CREATOR_AVATARURL, playlistCreatorAvatarUrl);
-            long playlistId = bean.getId();
+            String playlistId = playList.getId();
             intent.putExtra(PLAYLIST_ID, playlistId);
             startActivity(intent);
         }
@@ -239,7 +255,7 @@ public class WowFragment extends BaseFragment<WowPresenter> implements WowContra
     }
 
     @Override
-    public void onGetDailyRecommendSuccess(DailyRecommendBean bean) {
+    public void onGetDailyRecommendSuccess(SongDailyRecommendData bean) {
 
     }
 

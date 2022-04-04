@@ -30,6 +30,8 @@ import com.rikkathewrold.rikkamusic.R;
 import com.rikkathewrold.rikkamusic.base.BaseActivity;
 import com.rikkathewrold.rikkamusic.login.bean.LoginBean;
 import com.rikkathewrold.rikkamusic.main.bean.LikeListBean;
+import com.rikkathewrold.rikkamusic.main.bean.Song;
+import com.rikkathewrold.rikkamusic.main.bean.UserLikeData;
 import com.rikkathewrold.rikkamusic.manager.SongPlayManager;
 import com.rikkathewrold.rikkamusic.manager.event.MusicPauseEvent;
 import com.rikkathewrold.rikkamusic.manager.event.MusicStartEvent;
@@ -96,16 +98,15 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
     LinearLayout llInfo;
 
     //歌词
-    @BindView(R.id.lrc)
-    LyricView lrc;
+    //@BindView(R.id.lrc)
+    //LyricView lrc;
 
     //当前播放的歌曲
     private SongInfo currentSongInfo;
 
-    private long ids;
-    private SongDetailBean songDetail;
+    private long songId;
+    private Song songDetail;
     private TimerTaskManager mTimerTask;
-    private boolean isLike = false;
     private int playMode;
     private ObjectAnimator rotateAnimator;
     private ObjectAnimator alphaAnimator;
@@ -180,7 +181,8 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
             //SeekBar 设置 Max
             seekBar.setProgress((int) position);
             tvPastTime.setText(TimeUtil.getTimeNoYMDH(position));
-            lrc.updateTime(position);
+
+            //lrc.updateTime(position);
         });
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -198,7 +200,9 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
             public void onStopTrackingTouch(SeekBar seekBar) {
                 SongPlayManager.getInstance().seekTo(seekBar.getProgress());
                 SongActivity.this.seekBar.setProgress(seekBar.getProgress());
-                lrc.updateTime(seekBar.getProgress());
+
+
+                //lrc.updateTime(seekBar.getProgress());
             }
         });
     }
@@ -218,27 +222,27 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
             llInfo.setVisibility(View.GONE);
         } else {
             if (lyricBean == null) {
-                mPresenter.getLyric(Long.parseLong(currentSongInfo.getSongId()));
+
+                //todo 暂时不获取歌词
+                //mPresenter.getLyric(Long.parseLong(currentSongInfo.getSongId()));
             }
             llInfo.setVisibility(View.VISIBLE);
-            ids = Long.parseLong(currentSongInfo.getSongId());
+            songId = Long.parseLong(currentSongInfo.getSongId());
             String songId = currentSongInfo.getSongId();
 
-            //todo 暂时置为空,即没有喜欢列表。当点击了喜欢按钮时？？？
-            //List<String> likeList = SharePreferenceUtil.getInstance(this).getLikeList();
-            List<String> likeList = new ArrayList<>();
+
+            //判断当前歌曲是否是在喜欢列表中
+            List<String> likeList = SharePreferenceUtil.getInstance(this).getLikeList();
             LogUtil.d(TAG, "likeList :" + likeList);
-            //判断当前歌曲是否在喜欢收藏列表中
+            //判断当前歌曲是否在喜欢列表中
             if (likeList.contains(songId)) {
-                isLike = true;
                 ivLike.setImageResource(R.drawable.shape_like_white);
-            } else {
-                isLike = false;
             }
-            if (SongPlayManager.getInstance().getSongDetail(ids) == null) {
-                mPresenter.getSongDetail(ids);
+
+            if (SongPlayManager.getInstance().getSongDetail(Long.parseLong(songId)) == null) {
+                mPresenter.getSongDetail(Long.parseLong(songId));
             } else {
-                songDetail = SongPlayManager.getInstance().getSongDetail(ids);
+                songDetail = SongPlayManager.getInstance().getSongDetail(Long.parseLong(songId));
                 setSongDetailBean(songDetail);
             }
         }
@@ -312,8 +316,8 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
         return alphaAnimator;
     }
 
-    private void setSongDetailBean(SongDetailBean songDetail) {
-        String coverUrl = songDetail.getSongs().get(0).getAl().getPicUrl();
+    private void setSongDetailBean(Song songDetail) {
+        String coverUrl = songDetail.getPic();
         Glide.with(this)
                 .load(coverUrl)
                 .placeholder(R.drawable.shape_record)
@@ -348,11 +352,9 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
                 break;
             case R.id.iv_like:
                 //喜欢不喜欢按钮
-                if (isLike) {
-                    ToastUtils.show("Sorry啊，我没有找到取消喜欢的接口");
-                } else {
-                    mPresenter.likeMusic(ids);
-                }
+                LoginBean loginBean = GsonUtil.fromJSON(SharePreferenceUtil.getInstance(this).getUserInfo(""), LoginBean.class);
+                long uid = loginBean.getAccount().getId();
+                mPresenter.likeOrUnLikeMusic(songId, uid);
                 break;
             case R.id.iv_download:
                 //下载？
@@ -365,10 +367,15 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
                     return;
                 }
                 intent.setClass(SongActivity.this, CommentActivity.class);
-                intent.putExtra(CommentActivity.ID, songDetail.getSongs().get(0).getId());
-                intent.putExtra(CommentActivity.NAME, songDetail.getSongs().get(0).getName());
-                intent.putExtra(CommentActivity.ARTIST, songDetail.getSongs().get(0).getAr().get(0).getName());
-                intent.putExtra(CommentActivity.COVER, songDetail.getSongs().get(0).getAl().getPicUrl());
+                intent.putExtra(CommentActivity.ID, songDetail.getId());
+                intent.putExtra(CommentActivity.NAME, songDetail.getName());
+                //todo
+                //intent.putExtra(CommentActivity.ARTIST, songDetail.getSongs().get(0).getAr().get(0).getName());
+                intent.putExtra(CommentActivity.ARTIST, "geshou");
+
+                //intent.putExtra(CommentActivity.COVER, songDetail.getSongs().get(0).getAl().getPicUrl());
+                //todo 专辑图片？
+                intent.putExtra(CommentActivity.COVER, "");
                 intent.putExtra(CommentActivity.FROM, CommentActivity.SONG_COMMENT);
                 startActivity(intent);
                 break;
@@ -416,7 +423,8 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
     //根据isShowLyrics来判断是否展示歌词
     private void showLyrics(boolean isShowLyrics) {
         ivRecord.setVisibility(isShowLyrics ? View.GONE : View.VISIBLE);
-        lrc.setVisibility(isShowLyrics ? View.VISIBLE : View.GONE);
+        
+        //lrc.setVisibility(isShowLyrics ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -480,7 +488,7 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
 //    }
 
     @Override
-    public void onGetSongDetailSuccess(SongDetailBean bean) {
+    public void onGetSongDetailSuccess(Song bean) {
         LogUtil.d(TAG, "onGetSongDetailSuccess : " + bean);
         songDetail = bean;
         setSongDetailBean(songDetail);
@@ -494,16 +502,31 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
     }
 
     @Override
-    public void onLikeMusicSuccess(LikeMusicBean bean) {
+    public void onLikeOrUnLikeMusicSuccess(Boolean bean, String songId) {
         LogUtil.d(TAG, "onLikeMusicSuccess : " + bean);
-        if (bean.getCode() == 200) {
-            ToastUtils.show("喜欢成功");
-            ivLike.setImageResource(R.drawable.shape_like_white);
-            isLike = true;
-            LoginBean loginBean = GsonUtil.fromJSON(SharePreferenceUtil.getInstance(this).getUserInfo(""), LoginBean.class);
-            mPresenter.getLikeList(loginBean.getAccount().getId());
+        if (bean) {
+            //boolean like = true;
+            //1.判断是不喜欢还是喜欢操作
+            List<String> likeList = SharePreferenceUtil.getInstance(this).getLikeList();
+            if (likeList.contains(songId)) {
+                //不喜欢的操作
+                //like = false;
+                ToastUtils.show("取消喜欢");
+                ivLike.setImageResource(R.drawable.shape_not_like);
+                likeList.remove(songId);
+                SharePreferenceUtil.getInstance(this).saveLikeList(likeList);
+            } else {
+                ToastUtils.show("喜欢成功");
+                ivLike.setImageResource(R.drawable.shape_like_white);
+                likeList.add(songId);
+                SharePreferenceUtil.getInstance(this).saveLikeList(likeList);
+            }
+
+            //todo 这个地方不用再次查询
+            //LoginBean loginBean = GsonUtil.fromJSON(SharePreferenceUtil.getInstance(this).getUserInfo(""), LoginBean.class);
+            //mPresenter.getLikeList(loginBean.getAccount().getId());
         } else {
-            ToastUtils.show("喜欢失败TAT ErrorCode = " + bean.getCode());
+            ToastUtils.show("喜欢失败 ErrorCode = " + bean);
         }
     }
 
@@ -514,9 +537,9 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
     }
 
     @Override
-    public void onGetLikeListSuccess(LikeListBean bean) {
+    public void onGetLikeListSuccess(UserLikeData bean) {
         LogUtil.d(TAG, "onGetLikeListSuccess : " + bean);
-        List<Long> idsList = bean.getIds();
+        List<Long> idsList = bean.getSongIdList();
         List<String> likeList = new ArrayList<>();
         for (int i = 0; i < idsList.size(); i++) {
             String ids = String.valueOf(idsList.get(i));
@@ -553,6 +576,12 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
 
     @Override
     public void onGetLyricSuccess(LyricBean bean) {
+
+    }
+
+    // TODO: 2022/4/4  暂时不显示歌词
+    /*@Override
+    public void onGetLyricSuccess(LyricBean bean) {
         LogUtil.d(TAG, "onGetLyricSuccess : " + bean);
         if (bean.getLrc() != null) {
             if (bean.getTlyric().getLyric() != null) {
@@ -580,7 +609,7 @@ public class SongActivity extends BaseActivity<SongPresenter> implements SongCon
         lrc.setCoverChangeListener(() -> {
             showLyrics(false);
         });
-    }
+    }*/
 
     @Override
     public void onGetLyricFail(String e) {

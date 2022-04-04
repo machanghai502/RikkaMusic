@@ -20,6 +20,7 @@ import com.rikkathewrold.rikkamusic.search.bean.PlayListSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.RadioSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.SearchHistoryBean;
 import com.rikkathewrold.rikkamusic.search.bean.SingerSearchBean;
+import com.rikkathewrold.rikkamusic.search.bean.SongData;
 import com.rikkathewrold.rikkamusic.search.bean.SongSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.SynthesisSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.UserSearchBean;
@@ -87,8 +88,10 @@ public class SearchActivity extends BaseActivity<SearchPresenter> implements Sea
         rvHotSearch.setLayoutManager(manager);
         rvHotSearch.setAdapter(adapter);
         adapter.setListener(searchListener);
-        showDialog();
-        mPresenter.getHotSearchDetail();
+
+        // TODO: 2022/4/4 暂时不记录热搜
+        //showDialog();
+        //mPresenter.getHotSearchDetail();
     }
 
     @Override
@@ -123,6 +126,7 @@ public class SearchActivity extends BaseActivity<SearchPresenter> implements Sea
             return;
         }
         switch (v.getId()) {
+            //搜索按钮点击事件
             case R.id.btn_search:
                 String keywords = etSearch.getKeyWords();
                 if (!TextUtils.isEmpty(keywords)) {
@@ -160,6 +164,7 @@ public class SearchActivity extends BaseActivity<SearchPresenter> implements Sea
 
     //根据关键字去搜索
     private void searchSong(String keywords) {
+        //先处理历史搜索
         stringList.add(new SearchHistoryBean(keywords));
         if (stringList.size() > 10) {
             stringList.remove(0);
@@ -196,7 +201,7 @@ public class SearchActivity extends BaseActivity<SearchPresenter> implements Sea
     }
 
     @Override
-    public void onGetSongSearchSuccess(SongSearchBean bean) {
+    public void onGetSongSearchSuccess(SongData bean) {
 
     }
 

@@ -7,6 +7,7 @@ import com.rikkathewrold.rikkamusic.search.bean.HotSearchDetailBean;
 import com.rikkathewrold.rikkamusic.search.bean.PlayListSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.RadioSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.SingerSearchBean;
+import com.rikkathewrold.rikkamusic.search.bean.SongData;
 import com.rikkathewrold.rikkamusic.search.bean.SongSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.SynthesisSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.UserSearchBean;
@@ -21,7 +22,7 @@ public class SearchModel implements SearchContract.Model {
     }
 
     @Override
-    public Observable<SongSearchBean> getSongSearch(String keywords, int type) {
+    public Observable<SongData> getSongSearch(String keywords, int type) {
         return ApiEngine.getInstance().getApiService().getSongSearch(keywords, type);
     }
 

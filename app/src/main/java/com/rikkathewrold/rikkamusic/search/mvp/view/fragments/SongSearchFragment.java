@@ -13,6 +13,7 @@ import com.lzx.starrysky.model.SongInfo;
 import com.rikkathewrold.rikkamusic.R;
 import com.rikkathewrold.rikkamusic.base.BaseFragment;
 import com.rikkathewrold.rikkamusic.main.adapter.SongListAdapter;
+import com.rikkathewrold.rikkamusic.main.bean.Song;
 import com.rikkathewrold.rikkamusic.manager.SongPlayManager;
 import com.rikkathewrold.rikkamusic.search.bean.AlbumSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.FeedSearchBean;
@@ -20,6 +21,7 @@ import com.rikkathewrold.rikkamusic.search.bean.HotSearchDetailBean;
 import com.rikkathewrold.rikkamusic.search.bean.PlayListSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.RadioSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.SingerSearchBean;
+import com.rikkathewrold.rikkamusic.search.bean.SongData;
 import com.rikkathewrold.rikkamusic.search.bean.SongSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.SynthesisSearchBean;
 import com.rikkathewrold.rikkamusic.search.bean.UserSearchBean;
@@ -57,7 +59,7 @@ public class SongSearchFragment extends BaseFragment<SearchPresenter> implements
     private String keywords;
     private int searchType = 1;
     private SongListAdapter adapter;
-    private List<SongSearchBean.ResultBean.SongsBean> resultBeans = new ArrayList<>();
+    private List<Song> songs = new ArrayList<>();
     private boolean needRefresh = false;
     private List<SongInfo> songInfos = new ArrayList<>();
 
@@ -72,7 +74,9 @@ public class SongSearchFragment extends BaseFragment<SearchPresenter> implements
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onGetKeywordsEvent(KeywordsEvent event) {
         LogUtil.d(TAG, "onGetKeywordsEvent : " + event);
+
         if (event != null) {
+            keywords = event.getKeyword();
             if (keywords != null && !event.getKeyword().equals(keywords)) {
                 needRefresh = true;
                 if (((SearchResultActivity) getActivity()).getPosition() == 1) {
@@ -82,7 +86,6 @@ public class SongSearchFragment extends BaseFragment<SearchPresenter> implements
                     mPresenter.getSongSearch(keywords, searchType);
                 }
             }
-            keywords = event.getKeyword();
         }
     }
 
@@ -97,7 +100,7 @@ public class SongSearchFragment extends BaseFragment<SearchPresenter> implements
 
     @Override
     protected void initData() {
-        resultBeans.clear();
+        songs.clear();
 
         adapter = new SongListAdapter(getContext());
         adapter.setType(3);
@@ -169,25 +172,30 @@ public class SongSearchFragment extends BaseFragment<SearchPresenter> implements
     }
 
     @Override
-    public void onGetSongSearchSuccess(SongSearchBean bean) {
+    public void onGetSongSearchSuccess(SongData bean) {
         hideDialog();
         LogUtil.d(TAG, "onGetSongSearchSuccess : " + bean);
-        resultBeans.clear();
-        if (bean.getResult().getSongs() != null) {
-            resultBeans.addAll(bean.getResult().getSongs());
+        songs.clear();
+        if (bean.getSongs() != null) {
+            songs.addAll(bean.getSongs());
         }
         songInfos.clear();
-        for (int i = 0; i < resultBeans.size(); i++) {
+        for (int i = 0; i < songs.size(); i++) {
+            Song song = songs.get(i);
             SongInfo songInfo = new SongInfo();
-            songInfo.setSongId(String.valueOf(resultBeans.get(i).getId()));
-            songInfo.setArtist(resultBeans.get(i).getArtists().get(0).getName());
-            songInfo.setSongCover(resultBeans.get(i).getArtists().get(0).getPicUrl() != null ? resultBeans.get(i).getArtists().get(0).getPicUrl() :
-                    resultBeans.get(i).getArtists().get(0).getImg1v1Url());
-            songInfo.setSongName(resultBeans.get(i).getName());
-            songInfo.setSongUrl(SONG_URL + resultBeans.get(i).getId() + ".mp3");
-            songInfo.setDuration(resultBeans.get(i).getDuration());
-            songInfo.setArtistId(String.valueOf(resultBeans.get(i).getArtists().get(0).getId()));
-            songInfo.setArtistKey(resultBeans.get(i).getArtists().get(0).getPicUrl());
+            songInfo.setSongId(String.valueOf(song.getId()));
+
+            // TODO: 2022/4/4
+            songInfo.setSongCover("");
+            //songInfo.setSongCover(resultBeans.get(i).getArtists().get(0).getPicUrl() != null ? resultBeans.get(i).getArtists().get(0).getPicUrl() :
+                    //resultBeans.get(i).getArtists().get(0).getImg1v1Url());
+            songInfo.setSongName(song.getName());
+            songInfo.setSongUrl(SONG_URL + song.getUrl());
+            // TODO: 2022/4/4
+            songInfo.setDuration(30);
+            songInfo.setArtist("默认歌手");
+            songInfo.setArtistId(song.getSingerId());
+            songInfo.setArtistKey("http://p1.music.126.net/ULOn30612l-96hKgIy18tA==/18787355185828647.jpg");
             songInfos.add(songInfo);
         }
         adapter.notifyDataSetChanged(songInfos);
